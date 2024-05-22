@@ -1,16 +1,20 @@
 <script lang="ts">
   import { contentStore } from '../lib/stores';
+  import type { ContentItem, ContentType } from '../lib/stores';
+
+  import { tokenStore  } from '../lib/tokenStore';
+  import type { TokenType, DesignToken } from '../lib/tokenStore';
   import { onMount } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
   import { dndzone } from 'svelte-dnd-action';
 
-	type ContentType = 'codeBlock' | 'headline' | 'image' | 'table';
+/* 	type ContentType = 'codeBlock' | 'headline' | 'image' | 'table';
 
 	interface ContentItem {
     id: string;
 		type: ContentType;
 		content: string;
-	}
+	} */
 
   //let items = $contentStore;
   $: items = $contentStore;

@@ -1,9 +1,9 @@
 // stores.ts
 import { writable } from 'svelte/store';
 
-type ContentType = 'codeBlock' | 'headline' | 'image' | 'table';
+export type ContentType = 'codeBlock' | 'headline' | 'image' | 'table';
 
-interface ContentItem {
+export interface ContentItem {
   id: string;
   type: ContentType;
   content: string;
