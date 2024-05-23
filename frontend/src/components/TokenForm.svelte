@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { tokens } from '../stores/tokens';
+  import { tokensStore } from '../stores/tokens';  // Use the correct import
   import { v4 as uuidv4 } from 'uuid';
 
   type ColorToken = {
@@ -92,7 +92,7 @@
         'letter-spacing': appendDefaultUnit(typographyValue['letter-spacing']),
       };
     }
-    tokens.update((currentTokens) => {
+    tokensStore.update((currentTokens) => {
       const id = uuidv4();
       currentTokens[type][id] = newToken;
       return currentTokens;

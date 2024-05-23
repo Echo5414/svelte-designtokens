@@ -1,43 +1,18 @@
 <script lang="ts">
-  import { tokens } from '../stores/tokens';
+  import { tokensStore } from 'stores/tokens';  // Ensure the path alias is correctly used
   import ColorToken from '../components/ColorToken.svelte';
   import TypographyToken from '../components/TypographyToken.svelte';
   import TokenForm from '../components/TokenForm.svelte';
-  import type { Writable } from 'svelte/store';
-
-  interface ColorToken {
-    $type: 'color';
-    $description: string | null;
-    $value: string;
-    $extensions: Record<string, any> | null;
-  }
-
-  interface TypographyToken {
-    $type: 'typography';
-    $description: string | null;
-    $value: {
-      'font-family': string;
-      'font-size': string;
-      'font-weight': number;
-      'line-height': string | number;
-      'letter-spacing': string;
-    };
-    $extensions: Record<string, any> | null;
-  }
-
-  interface Tokens {
-    color: Record<string, ColorToken>;
-    typography: Record<string, TypographyToken>;
-  }
+  import type { Tokens } from '../utils/localStorage';
 
   let currentTokens: Tokens;
 
-  $: tokens.subscribe((value: Tokens) => {
+  $: tokensStore.subscribe((value: Tokens) => {
     currentTokens = value;
   });
 
   function deleteToken(id: string, tokenType: 'color' | 'typography') {
-    tokens.update((currentTokens) => {
+    tokensStore.update((currentTokens) => {
       delete currentTokens[tokenType][id];
       return currentTokens;
     });
@@ -71,10 +46,6 @@
     display: flex;
     align-items: flex-start;
     margin-bottom: 1rem;
-  }
-  .token-container p {
-    margin: 0;
-    padding: 0;
   }
   .token-container .delete-button {
     margin-left: 1rem;
