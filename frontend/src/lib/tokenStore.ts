@@ -5,17 +5,14 @@ import { defaultDesignTokens } from './defaultValues';
 
 export const tokenStore = createStore<DesignToken>({
   key: 'designTokens',
-  createDefaultItem: (category: string, customProps = {}) => {
-    const defaultValue = (category === 'typography') ? {} : '';
-    return {
-      id: uuidv4(),
-      name: customProps.name || category,
-      type: category as TokenType,  // Cast category to TokenType
-      value: customProps.value || defaultValue,
-      $description: customProps.$description || null,
-      $extensions: customProps.$extensions || null,
-      ...customProps
-    };
-  },
+  createDefaultItem: (category: TokenType, customProps = {}) => ({
+    id: uuidv4(),
+    name: 'New Token',
+    type: category,
+    value: category === 'color' ? '' : {},
+    $description: null,
+    $extensions: null,
+    ...customProps
+  }),
   defaultItems: defaultDesignTokens,
 });

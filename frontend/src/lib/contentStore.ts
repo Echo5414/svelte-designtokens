@@ -11,5 +11,5 @@ export const contentStore = createStore<ContentItem>({
     content: customProps.content || '',
     ...customProps
   }),
-  defaultItems: defaultContentItems,
+  defaultItems: { default: defaultContentItems },
 });

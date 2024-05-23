@@ -7,20 +7,17 @@
   import type { ContentItem, DesignToken, TokenType } from '../lib/types';
 
   // Reactive subscription to content items
-  $: contentItems = $contentStore;
+  $: contentItems = $contentStore.default;
 
   // Reactive subscription to design tokens
-  let tokens: Record<string, Record<string, DesignToken>> = {};
-  tokenStore.subscribe(value => {
-    tokens = value;
-  });
+  $: tokens = $tokenStore;
 
   let pendingDeleteContent: ContentItem | null = null;
 
   onMount(() => {
     const interval = setInterval(() => {
       if (pendingDeleteContent) {
-        contentStore.remove(contentItems.indexOf(pendingDeleteContent));
+        contentStore.remove('default', pendingDeleteContent.id);
         pendingDeleteContent = null;
       }
     }, 100);
@@ -28,7 +25,7 @@
   });
 
   function safeEventValue(event: Event): string {
-    const target = event.target as HTMLInputElement | HTMLTextAreaElement | HTMLHeadingElement;
+    const target = event.target as HTMLInputElement | HTMLTextAreaElement;
     return target ? (target.value || target.textContent || '') : '';
   }
 
@@ -54,19 +51,19 @@
     const target = event.target as HTMLInputElement;
     const token = tokens[category][id];
     const updatedValue = {
-      ...token.value as Record<string, unknown>,
+      ...(token.value as Record<string, unknown>),
       [key]: target.value
     };
     updateToken(category, id, { value: updatedValue });
   }
 
-  function handleDndUpdate(event) {
+  function handleDndUpdate(event: CustomEvent<{ items: { id: string, category: string, token: DesignToken }[] }>) {
     const { items } = event.detail;
-    const updatedTokens = items.reduce((acc, { id, category, token }) => {
+    const updatedTokens = items.reduce((acc: Record<string, Record<string, DesignToken>>, { id, category, token }) => {
       if (!acc[category]) acc[category] = {};
       acc[category][id] = token;
       return acc;
-    }, {} as Record<string, Record<string, DesignToken>>);
+    }, {});
     tokenStore.set(updatedTokens);
   }
 
@@ -89,19 +86,19 @@
 </div>
 
 <!-- UI for displaying and managing content items with drag-and-drop -->
-<div use:dndzone={{ items: contentItems, flipDurationMs: 300 }} on:consider={(event) => contentStore.set(event.detail.items)} on:finalize={(event) => contentStore.set(event.detail.items)}>
-  {#each contentItems as item, i (item.id)}
+<div use:dndzone={{ items: contentItems, flipDurationMs: 300 }} on:consider={(event) => contentStore.set('default', event.detail.items)} on:finalize={(event) => contentStore.set('default', event.detail.items)}>
+  {#each contentItems as item (item.id)}
     <div>
       {#if item.type === 'codeBlock'}
-        <textarea on:input={(event) => contentStore.update('default', i, { content: safeEventValue(event) })}>{item.content}</textarea>
+        <textarea on:input={(event) => contentStore.update('default', item.id, { content: safeEventValue(event) })}>{item.content}</textarea>
       {:else if item.type === 'headline'}
-        <h1 contenteditable="true" on:input={(event) => contentStore.update('default', i, { content: safeEventValue(event) })}>{item.content}</h1>
+        <h1 contenteditable="true" on:input={(event) => contentStore.update('default', item.id, { content: safeEventValue(event) })}>{item.content}</h1>
       {:else if item.type === 'image'}
         <img src={item.content} alt="Image"/>
       {:else if item.type === 'table'}
-        <table contenteditable="true" on:input={(event) => contentStore.update('default', i, { content: safeEventValue(event) })}>{item.content}</table>
+        <table contenteditable="true" on:input={(event) => contentStore.update('default', item.id, { content: safeEventValue(event) })}>{item.content}</table>
       {/if}
-      <button on:click={() => contentStore.remove('default', i)}>Delete</button>
+      <button on:click={() => contentStore.remove('default', item.id)}>Delete</button>
     </div>
   {/each}
 </div>
@@ -116,7 +113,6 @@
     "line-height": 1.2,
     "letter-spacing": "0px"
   })}>+ Typography Token</button>
-  <!-- Additional token type buttons can be added similarly -->
 </div>
 
 <!-- UI for displaying and managing tokens grouped by type with drag-and-drop -->
@@ -129,9 +125,9 @@
         {#if token.type === 'color'}
           <input type="color" bind:value={getTokenValue(token)} on:input={(event) => handleTokenInput(category, id, event)} />
         {:else if token.type === 'typography'}
-          {#each Object.entries(token.value) as [key, val]}
+          {#each Object.entries(token.value as Record<string, string | number>) as [key, val]}
             <label>{key.replace('-', ' ')}</label>
-            <input bind:value={getTypographyValue(token, key)} on:input={(event) => handleTypographyInput(category, id, key, event)} />
+            <input bind:value={val} on:input={(event) => handleTypographyInput(category, id, key, event)} />
           {/each}
         {/if}
         <button on:click={() => deleteToken(category, id)}>Delete</button>
