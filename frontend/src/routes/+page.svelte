@@ -1,112 +1,61 @@
 <script lang="ts">
-  import { contentStore } from '../lib/stores';
-  import type { ContentItem, ContentType } from '../lib/stores';
-
-  import { tokenStore  } from '../lib/tokenStore';
-  import type { TokenType, DesignToken } from '../lib/tokenStore';
   import { onMount } from 'svelte';
-  import { v4 as uuidv4 } from 'uuid';
+  import { contentStore } from '../lib/contentStore';
+  import { tokenStore } from '../lib/tokenStore';
   import { dndzone } from 'svelte-dnd-action';
+  import { addItem, updateItem, deleteItem, handleDndUpdate, addToken, updateToken, deleteToken } from '../lib/storeUtils';
+  import type { ContentItem, ContentType } from '../lib/types';
+  import type { DesignToken, TokenType } from '../lib/types';
 
-/* 	type ContentType = 'codeBlock' | 'headline' | 'image' | 'table';
+  $: contentItems = $contentStore;
+  $: tokens = $tokenStore;
 
-	interface ContentItem {
-    id: string;
-		type: ContentType;
-		content: string;
-	} */
-
-  //let items = $contentStore;
-  $: items = $contentStore;
-
-  let pendingDelete: ContentItem | null = null;
-
-	function addItem(type: ContentType): void {
-		const id = uuidv4();
-		let content: string;
-		switch (type) {
-			case 'codeBlock':
-				content = '// Your code here\nconsole.log("Hello, world!");';
-				break;
-			case 'headline':
-				content = 'Neue Überschrift';
-				break;
-			case 'image':
-				content = 'https://example.com/image.jpg';
-				break;
-			case 'table':
-				content = 'Initialer Tabelleninhalt';
-				break;
-			default:
-				content = '';
-		}
-    console.log(`Adding item: ${content}`);
-    contentStore.add({ id, type, content });
-    console.log(`Item added. Current items:`, $contentStore);
-	}
-
-  function updateItem(index: number, event: Event): void {
-    const target = event.target as HTMLElement;
-    let newValue: string;
-    if (target instanceof HTMLTextAreaElement) {
-      newValue = target.value;
-    } else {
-      newValue = target.textContent || '';
-    }
-    contentStore.update(index, newValue);
-  }
+  let pendingDeleteContent: ContentItem | null = null;
 
   onMount(() => {
     const interval = setInterval(() => {
-      if (pendingDelete) {
-        contentStore.remove(items.indexOf(pendingDelete));
-        pendingDelete = null;
+      if (pendingDeleteContent) {
+        deleteItem(contentStore, contentItems.indexOf(pendingDeleteContent));
+        pendingDeleteContent = null;
       }
     }, 100);
-
     return () => clearInterval(interval);
   });
-
-  function deleteItem(index: number): void {
-    contentStore.remove(index);
-  }
-
-  let contentItems = [];
-
-function handleDndUpdate(event): void {
-  const { detail } = event;
-  items = detail.items;
-  contentStore.set(items);
-  contentItems = [...items]; // Update contentItems
-
-  // Update contentItems array
-  const draggedItem = contentItems[detail.oldIndex];
-  contentItems.splice(detail.oldIndex, 1);
-  contentItems.splice(detail.newIndex, 0, draggedItem);
-}
-
 </script>
 
-<button on:click={() => addItem('codeBlock')}>+ Codeblock</button>
-<button on:click={() => addItem('headline')}>+ Headline H1</button>
-<button on:click={() => addItem('image')}>+ Image</button>
-<button on:click={() => addItem('table')}>+ Table</button>
+<div>
+  <button on:click={() => addItem(contentStore, 'codeBlock')}>+ Codeblock</button>
+  <button on:click={() => addItem(contentStore, 'headline')}>+ Headline</button>
+  <button on:click={() => addItem(contentStore, 'image')}>+ Image</button>
+  <button on:click={() => addItem(contentStore, 'table')}>+ Table</button>
+</div>
 
-<div use:dndzone={{ items, flipDurationMs: 300 }} on:consider={handleDndUpdate} on:finalize={handleDndUpdate}>
-  {#each items as item, i (item.id)}
-    <div class="content-block">
+<div use:dndzone={{ items: contentItems, flipDurationMs: 300 }} on:consider={(event) => handleDndUpdate(contentStore, event)} on:finalize={(event) => handleDndUpdate(contentStore, event)}>
+  {#each contentItems as item, i (item.id)}
+    <div>
       {#if item.type === 'codeBlock'}
-        <textarea on:input={(event) => updateItem(i, event)}>{item.content}</textarea>
+        <textarea on:input={(event) => updateItem(contentStore, i, event)}>{item.content}</textarea>
       {:else if item.type === 'headline'}
-        <h1 contenteditable="true" on:input={(event) => updateItem(i, event)}>{item.content}</h1>
+        <h1 contenteditable="true" on:input={(event) => updateItem(contentStore, i, event)}>{item.content}</h1>
       {:else if item.type === 'image'}
-        <img src={item.content} alt="Bild" />
+        <img src={item.content} alt="Image"/>
       {:else if item.type === 'table'}
-        <table contenteditable="true" on:input={(event) => updateItem(i, event)}>
-          {item.content}
-        </table>
+        <table contenteditable="true" on:input={(event) => updateItem(contentStore, i, event)}>{item.content}</table>
       {/if}
-      <button on:click={() => deleteItem(i)}>🗑️</button>
+      <button on:click={() => deleteItem(contentStore, i)}>Delete</button>
+    </div>
+  {/each}
+</div>
+
+<div>
+  <button on:click={() => addToken(tokenStore, 'color', '#FFFFFF')}>+ Color Token</button>
+</div>
+
+<div use:dndzone={{ items: tokens, flipDurationMs: 300 }} on:consider={(event) => handleDndUpdate(tokenStore, event)} on:finalize={(event) => handleDndUpdate(tokenStore, event)}>
+  {#each tokens as token, i (token.id)}
+    <div>
+      <label>{token.name}</label>: <input bind:value={token.value} on:input={(event) => updateToken(tokenStore, i, event)} />
+      <button on:click={() => deleteToken(tokenStore, i)}>Delete</button>
     </div>
   {/each}
 </div>
