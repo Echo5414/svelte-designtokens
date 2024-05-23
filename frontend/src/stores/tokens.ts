@@ -1,3 +1,4 @@
+// src/stores/tokens.ts
 import { writable } from 'svelte/store';
 import { loadTokens, saveTokens } from '../utils/localStorage';
 import sampleData from '../lib/schemasSample.json';

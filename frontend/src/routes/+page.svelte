@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { tokensStore } from 'stores/tokens';  // Ensure the path alias is correctly used
+  import { tokensStore } from '../stores/tokens';  // Updated to use path alias
   import ColorToken from '../components/ColorToken.svelte';
   import TypographyToken from '../components/TypographyToken.svelte';
   import TokenForm from '../components/TokenForm.svelte';
@@ -21,7 +21,6 @@
 
 <main>
   <h1>Design Tokens</h1>
-
   <TokenForm />
 
   <h2>Colors</h2>

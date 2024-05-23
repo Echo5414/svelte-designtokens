@@ -10,12 +10,7 @@
     "sourceMap": true,
     "strict": true,
     "moduleResolution": "bundler",
-    "baseUrl": ".",
-    "paths": {
-      "$lib/*": ["src/lib/*"],
-      "$utils/*": ["src/utils/*"],
-      "stores/*": ["src/stores/*"]
-    }
+    "baseUrl": "."
   },
   "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.js", "src/globals.d.ts"]
 }

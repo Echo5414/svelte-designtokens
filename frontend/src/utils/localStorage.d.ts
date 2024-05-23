@@ -2,7 +2,9 @@ export interface ColorToken {
   $type: 'color';
   $description: string | null;
   $value: string;
-  $extensions: Record<string, unknown> | null;
+  $extensions: {
+    name: string;
+  } | null;
 }
 
 export interface TypographyToken {
@@ -12,10 +14,12 @@ export interface TypographyToken {
     'font-family': string;
     'font-size': string;
     'font-weight': number;
-    'line-height': string | number;
+    'line-height': number | string;
     'letter-spacing': string;
   };
-  $extensions: Record<string, unknown> | null;
+  $extensions: {
+    name: string;
+  } | null;
 }
 
 export interface Tokens {

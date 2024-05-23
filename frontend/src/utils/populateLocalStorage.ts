@@ -1,6 +1,6 @@
-import sampleData from '$lib/schemasSample.json';
-import { loadTokens, saveTokens } from '$utils/localStorage';
-import type { Tokens } from '$utils/localStorage';
+import sampleData from '../lib/schemasSample.json';
+import { loadTokens, saveTokens } from '../utils/localStorage';
+import type { Tokens } from '../utils/localStorage';
 
 export function initializeLocalStorage() {
   if (typeof window !== 'undefined' && window.localStorage) {
