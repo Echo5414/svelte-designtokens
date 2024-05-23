@@ -85,7 +85,12 @@
     if (newToken.$type === 'color') {
       newToken.$value = colorValue;
     } else {
-      newToken.$value = typographyValue;
+      newToken.$value = {
+        ...typographyValue,
+        'font-size': appendDefaultUnit(typographyValue['font-size']),
+        'line-height': formatLineHeight(typographyValue['line-height']),
+        'letter-spacing': appendDefaultUnit(typographyValue['letter-spacing']),
+      };
     }
     tokens.update((currentTokens) => {
       const id = uuidv4();
@@ -93,6 +98,14 @@
       return currentTokens;
     });
     initializeNewToken(type); // Reset the form
+  }
+
+  function appendDefaultUnit(value: string | number): string {
+    return typeof value === 'number' || /^\d+$/.test(value) ? `${value}px` : value;
+  }
+
+  function formatLineHeight(value: string | number): string | number {
+    return typeof value === 'number' || /^\d+(\.\d+)?$/.test(value) ? value : appendDefaultUnit(value);
   }
 </script>
 
