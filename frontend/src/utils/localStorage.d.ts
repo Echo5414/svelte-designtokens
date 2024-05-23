@@ -22,9 +22,20 @@ export interface TypographyToken {
   } | null;
 }
 
+export interface SpacingToken {
+  $type: 'spacing';
+  $description: string | null;
+  $value: string;
+  $extensions: {
+    name: string;
+  } | null;
+}
+
 export interface Tokens {
   color: Record<string, ColorToken>;
   typography: Record<string, TypographyToken>;
+  spacing: Record<string, SpacingToken>;
+  [key: string]: Record<string, ColorToken | TypographyToken | SpacingToken>; // Index signature
 }
 
 export function loadTokens(): Tokens | null;

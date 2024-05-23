@@ -1,10 +1,10 @@
-// src/stores/tokens.ts
 import { writable } from 'svelte/store';
 import { loadTokens, saveTokens } from '../utils/localStorage';
 import sampleData from '../lib/schemasSample.json';
 import type { Tokens } from '../utils/localStorage';
 
-const initialTokens = (loadTokens() || sampleData.tokens) as Tokens;
+// Directly assert sampleData as Tokens
+const initialTokens = (loadTokens() || sampleData) as Tokens;
 
 export const tokensStore = writable<Tokens>(initialTokens);
 

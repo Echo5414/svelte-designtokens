@@ -60,6 +60,23 @@
           "required": false
         }
       }
+    },
+    "spacing": {
+      "id": {
+        "$type": "spacing",
+        "$description": {
+          "type": ["string", "null"],
+          "required": false
+        },
+        "$value": {
+          "type": "string",
+          "required": true
+        },
+        "$extensions": {
+          "type": ["object", "null"],
+          "required": false
+        }
+      }
     }
   }
 }

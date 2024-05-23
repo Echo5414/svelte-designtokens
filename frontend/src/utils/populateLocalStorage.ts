@@ -1,12 +1,14 @@
-import sampleData from '../lib/schemasSample.json';
-import { loadTokens, saveTokens } from '../utils/localStorage';
+import sampleTokens from '../lib/schemasSample.json';
 import type { Tokens } from '../utils/localStorage';
+import { loadTokens, saveTokens } from '../utils/localStorage';
 
 export function initializeLocalStorage() {
-  if (typeof window !== 'undefined' && window.localStorage) {
-    const tokens: Tokens | null = loadTokens();
-    if (!tokens) {
-      saveTokens(sampleData.tokens as Tokens);
+  if (typeof window !== 'undefined' && typeof localStorage !== 'undefined') {
+    const existingTokens = loadTokens();
+    if (!existingTokens) {
+      saveTokens(sampleTokens as unknown as Tokens);
     }
   }
 }
+
+initializeLocalStorage();
