@@ -1,0 +1,44 @@
+{
+  "tokens": {
+    "color": {
+      "0": {
+        "$type": "color",
+        "$description": "Primary color of the application",
+        "$value": "#ff5733",
+        "$extensions": {
+          "com.username.myapp": {
+            "name": "primary color"
+          }
+        }
+      },
+      "1": {
+        "$type": "color",
+        "$description": "Secondary color of the application",
+        "$value": "#33c4ff",
+        "$extensions": {
+          "com.username.myapp": {
+            "name": "secondary color"
+          }
+        }
+      }
+    },
+    "typography": {
+      "1": {
+        "$type": "typography",
+        "$description": "Heading typography style",
+        "$value": {
+          "font-family": "Arial, sans-serif",
+          "font-size": "32px",
+          "font-weight": 700,
+          "line-height": "40px",
+          "letter-spacing": "0.1px"
+        },
+        "$extensions": {
+          "com.username.myapp": {
+            "name": "Heading H1"
+          }
+        }
+      }
+    }
+  }
+}
