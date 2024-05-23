@@ -1,67 +1,67 @@
+// createStore.ts
 import { writable } from 'svelte/store';
-import type { Writable } from 'svelte/store';
-import { v4 as uuidv4 } from 'uuid';
 
-interface BaseItem {
-  id: string;
-  [key: string]: any;
-}
-
-interface StoreConfig<T extends BaseItem, Type extends string> {
+export function createStore<T>({
+  key,
+  createDefaultItem,
+  defaultItems,
+}: {
   key: string;
-  createDefaultItem: (type: Type, customProps?: Partial<T>) => T;
-  defaultItems?: T[];
-}
+  createDefaultItem: (type: string, customProps?: Partial<T>) => T;
+  defaultItems: Record<string, Record<string, T>>;
+}) {
+  const isBrowser = typeof window !== 'undefined';
 
-export function createStore<T extends BaseItem, Type extends string>(config: StoreConfig<T, Type>): Writable<T[]> & {
-  add: (type: Type, item: Partial<T>) => void;
-  update: (index: number, item: Partial<T>) => void;
-  remove: (index: number) => void;
-  set: (items: T[]) => void;
-} {
-  const isBrowser: boolean = typeof window !== 'undefined';
-  let initial: T[] = isBrowser ? JSON.parse(localStorage.getItem(config.key) || '[]') : [];
-  
-  if (isBrowser && initial.length === 0 && config.defaultItems) {
-    initial = config.defaultItems;
-    localStorage.setItem(config.key, JSON.stringify(initial));
-  }
-  
-  const { subscribe, set, update } = writable<T[]>(initial);
+  const initial = isBrowser
+    ? JSON.parse(localStorage.getItem(key) || 'null') || defaultItems
+    : defaultItems;
 
-  const updateLocalStorage = (items: T[]) => {
+  const { subscribe, set, update } = writable<Record<string, Record<string, T>>>(initial);
+
+  subscribe(items => {
     if (isBrowser) {
-      localStorage.setItem(config.key, JSON.stringify(items));
+      localStorage.setItem(key, JSON.stringify(items));
     }
-  };
+  });
 
   return {
     subscribe,
-    set: (items: T[]) => {
-      set(items);
-      updateLocalStorage(items);
-    },
-    add: (type: Type, item: Partial<T>) => {
+    add: (category: string, customProps?: Partial<T>) => {
+      const newItem = createDefaultItem(category, customProps);
       update(items => {
-        const newItem = config.createDefaultItem(type, item);
-        const updated = [...items, newItem];
-        updateLocalStorage(updated);
-        return updated;
+        const categoryItems = items[category] || {};
+        const newIndex = Object.keys(categoryItems).length.toString();
+        return {
+          ...items,
+          [category]: {
+            ...categoryItems,
+            [newIndex]: newItem,
+          },
+        };
       });
     },
-    update: (index: number, item: Partial<T>) => {
+    update: (category: string, index: string, updatedItem: Partial<T>) => {
+      update(items => ({
+        ...items,
+        [category]: {
+          ...items[category],
+          [index]: {
+            ...items[category][index],
+            ...updatedItem,
+          },
+        },
+      }));
+    },
+    remove: (category: string, index: string) => {
       update(items => {
-        const updated = items.map((current, i) => i === index ? { ...current, ...item } : current);
-        updateLocalStorage(updated);
-        return updated;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { [index]: _, ...remainingItems } = items[category];
+        return {
+          ...items,
+          [category]: remainingItems,
+        };
       });
     },
-    remove: (index: number) => {
-      update(items => {
-        const updated = items.filter((_, i) => i !== index);
-        updateLocalStorage(updated);
-        return updated;
-      });
-    },
+    set,
   };
 }

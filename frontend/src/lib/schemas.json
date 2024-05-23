@@ -1,0 +1,63 @@
+{
+  "color": {
+    "id": {
+      "$type": "color",
+      "$description": {
+        "type": ["string", "null"],
+        "required": false
+      },
+      "$value": {
+        "type": "string",
+        "required": true
+      },
+      "$extensions": {
+        "type": ["object", "null"],
+        "required": false
+      }
+    }
+  },
+  "typography": {
+    "id": {
+      "$type": "typography",
+      "$description": {
+        "type": ["string", "null"],
+        "required": false
+      },
+      "$value": {
+        "type": "object",
+        "required": true,
+        "properties": {
+          "font-family": {
+            "type": "string",
+            "required": true
+          },
+          "font-size": {
+            "type": "string",
+            "required": true
+          },
+          "font-weight": {
+            "type": ["string", "number"],
+            "minimum": 1,
+            "maximum": 1000,
+            "required": true,
+            "default": 400
+          },
+          "line-height": {
+            "type": ["string", "number"],
+            "required": true,
+            "default": 1.2
+          },
+          "letter-spacing": {
+            "type": "string",
+            "required": true,
+            "default": "0px"
+          }
+        }
+      },
+      "$extensions": {
+        "type": ["object", "null"],
+        "required": false
+      }
+    }
+  }
+}

@@ -1,15 +1,15 @@
 import { createStore } from './createStore';
 import { v4 as uuidv4 } from 'uuid';
-import type { ContentItem, ContentType, Store } from './types';
-import { defaultContentValues, defaultContentItems } from './defaultValues';
+import type { ContentItem, ContentType } from './types';
+import { defaultContentItems } from './defaultValues';
 
-export const contentStore = createStore<ContentItem, ContentType>({
+export const contentStore = createStore<ContentItem>({
   key: 'contentItems',
-  createDefaultItem: (type: ContentType, customProps = {}) => ({
+  createDefaultItem: (type: string, customProps = {}) => ({
     id: uuidv4(),
-    type,
-    content: defaultContentValues[type] || '',
+    type: type as ContentType,  // Cast type to ContentType
+    content: customProps.content || '',
     ...customProps
   }),
-  defaultItems: defaultContentItems
-}) as unknown as Store<ContentItem>;
+  defaultItems: defaultContentItems,
+});

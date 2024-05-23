@@ -6,13 +6,13 @@ export interface ContentItem {
   content: string;
 }
 
-export type TokenType = 'color' | 'number' | 'string' | 'boolean';
+export type TokenType = 'color' | 'number' | 'string' | 'boolean' | 'typography'; // Include 'typography'
 
 export interface DesignToken {
   id: string;
-  name: string; // Ensure name is not optional
+  name: string;
   type: TokenType;
-  value: string | number | boolean;
+  value: string | number | boolean | Record<string, any>; // Allow 'value' to be an object
   $description?: string | null;
   $extensions?: Record<string, unknown> | null;
 }

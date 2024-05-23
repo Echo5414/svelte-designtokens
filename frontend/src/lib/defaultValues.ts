@@ -1,52 +1,32 @@
-import type { ContentItem, ContentType, DesignToken, TokenType } from './types';
+// defaultValues.ts
+import type { ContentItem, DesignToken } from './types';
 
-export const defaultContentValues: Record<ContentType, string> = {
-  codeBlock: '// Your code here\nconsole.log("Hello, world!");',
-  headline: 'Neue Überschrift',
-  image: 'https://example.com/image.jpg',
-  table: 'Initialer Tabelleninhalt',
+export const defaultContentItems: Record<string, Record<string, ContentItem>> = {
+  default: {
+    '1': { id: '1', type: 'headline', content: 'Neue Überschrift' },
+    '2': { id: '2', type: 'image', content: 'https://example.com/image.jpg' },
+  },
 };
 
-export const defaultContentItems: ContentItem[] = [
-  {
-    id: '1',
-    type: 'headline',
-    content: defaultContentValues['headline'],
+export const defaultDesignTokens: Record<string, Record<string, DesignToken>> = {
+  color: {
+    '1': { id: '1', name: 'White Color', type: 'color', value: '#FFFFFF', $description: 'Default white color', $extensions: null },
+    '2': { id: '2', name: 'Black Color', type: 'color', value: '#000000', $description: 'Default black color', $extensions: null },
   },
-  {
-    id: '2',
-    type: 'image',
-    content: defaultContentValues['image'],
-  },
-  {
-    id: '3',
-    type: 'codeBlock',
-    content: defaultContentValues['codeBlock'],
-  },
-  {
-    id: '4',
-    type: 'table',
-    content: defaultContentValues['table'],
-  },
-  // Add more default content items as needed
-];
-
-export const defaultDesignTokens: DesignToken[] = [
-  {
-    id: '1',
-    name: 'White Color',
-    type: 'color',
-    value: '#FFFFFF',
-    $description: 'Default white color',
-    $extensions: null,
-  },
-  {
-    id: '2',
-    name: 'Black Color',
-    type: 'color',
-    value: '#000000',
-    $description: 'Default black color',
-    $extensions: null,
-  },
-  // Add more default tokens as needed
-];
+  typography: {
+    '1': {
+      id: '1',
+      name: 'Default Typography',
+      type: 'typography',
+      value: {
+        'font-family': 'Arial',
+        'font-size': '16px',
+        'font-weight': 400,
+        'line-height': 1.2,
+        'letter-spacing': '0px'
+      },
+      $description: 'Default typography settings',
+      $extensions: null
+    },
+  }
+};
