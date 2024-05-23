@@ -7,7 +7,10 @@
   import type { ContentItem, ContentType } from '../lib/types';
   import type { DesignToken, TokenType } from '../lib/types';
 
+  // Reactive subscription to content items
   $: contentItems = $contentStore;
+  
+  // Reactive subscription to design tokens
   $: tokens = $tokenStore;
 
   let pendingDeleteContent: ContentItem | null = null;
@@ -23,6 +26,7 @@
   });
 </script>
 
+<!-- UI for adding content items -->
 <div>
   <button on:click={() => addItem(contentStore, 'codeBlock')}>+ Codeblock</button>
   <button on:click={() => addItem(contentStore, 'headline')}>+ Headline</button>
@@ -30,6 +34,7 @@
   <button on:click={() => addItem(contentStore, 'table')}>+ Table</button>
 </div>
 
+<!-- UI for displaying and managing content items with drag-and-drop -->
 <div use:dndzone={{ items: contentItems, flipDurationMs: 300 }} on:consider={(event) => handleDndUpdate(contentStore, event)} on:finalize={(event) => handleDndUpdate(contentStore, event)}>
   {#each contentItems as item, i (item.id)}
     <div>
@@ -47,18 +52,23 @@
   {/each}
 </div>
 
+<!-- UI for adding design tokens -->
 <div>
   <button on:click={() => addToken(tokenStore, 'color', '#FFFFFF')}>+ Color Token</button>
+  <!-- Additional token type buttons can be added similarly -->
 </div>
 
+<!-- UI for displaying and managing tokens with drag-and-drop -->
 <div use:dndzone={{ items: tokens, flipDurationMs: 300 }} on:consider={(event) => handleDndUpdate(tokenStore, event)} on:finalize={(event) => handleDndUpdate(tokenStore, event)}>
   {#each tokens as token, i (token.id)}
     <div>
-      <label>{token.name}</label>: <input bind:value={token.value} on:input={(event) => updateToken(tokenStore, i, event)} />
+      <label>{token.name}</label>: <input bind:value={token.$value} on:input={(event) => updateToken(tokenStore, i, event)} />
       <button on:click={() => deleteToken(tokenStore, i)}>Delete</button>
     </div>
   {/each}
 </div>
+
+
 
 <style>
 	.content-block {

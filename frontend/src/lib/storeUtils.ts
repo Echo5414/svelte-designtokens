@@ -24,14 +24,14 @@ export function handleDndUpdate(store: Store<ContentItem>, event: any): void {
   store.set(detail.items);
 }
 
-export function addToken(store: Store<DesignToken>, type: TokenType, value: string | number | boolean): void {
-  store.add(type, { id: uuidv4(), name: type, type, value });
+export function addToken(store: Store<DesignToken>, type: TokenType, value: string | number | boolean, description?: string, extensions?: Record<string, unknown>): void {
+  store.add(type, { id: uuidv4(), $type: type, $value: value, $description: description || null, $extensions: extensions || null });
 }
 
 export function updateToken(store: Store<DesignToken>, index: number, event: Event): void {
   const target = event.target as HTMLInputElement;
   if (target) {
-    store.update(index, { value: target.value });
+    store.update(index, { $value: target.value });
   }
 }
 

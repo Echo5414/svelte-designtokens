@@ -10,9 +10,11 @@ export type TokenType = 'color' | 'number' | 'string' | 'boolean';
 
 export interface DesignToken {
   id: string;
-  name: string;
+  name: string; // Ensure name is not optional
   type: TokenType;
   value: string | number | boolean;
+  $description?: string | null;
+  $extensions?: Record<string, unknown> | null;
 }
 
 export interface Store<T> {
