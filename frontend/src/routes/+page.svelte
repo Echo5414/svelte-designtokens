@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { tokensStore, updateToken, deleteToken } from '../stores/tokens';
+  import { tokensStore, updateToken, addToken, deleteToken } from '../stores/tokens';
   import ColorToken from '../components/ColorToken.svelte';
   import TypographyToken from '../components/TypographyToken.svelte';
   import SpacingToken from '../components/SpacingToken.svelte';
@@ -22,9 +22,14 @@
     deleteToken(tokenType, id);
   }
 
-  type TokenSaveEvent = CustomEvent<{ id: string; token: ColorTokenType | TypographyTokenType | SpacingTokenType; type: keyof Tokens }>;
+  type TokenEventDetail = { id: string; token: ColorTokenType | TypographyTokenType | SpacingTokenType; type: keyof Tokens };
 
-  function handleSaveToken(event: TokenSaveEvent) {
+  function handleAddToken(event: CustomEvent<TokenEventDetail>) {
+    const { id, token, type } = event.detail;
+    addToken(type, id, token);
+  }
+
+  function handleSaveToken(event: CustomEvent<TokenEventDetail>) {
     const { id, token, type } = event.detail;
     updateToken(type, id, token);
   }
@@ -33,7 +38,7 @@
 <main>
   <h1>Design Tokens</h1>
 
-  <TokenForm />
+  <TokenForm on:add={handleAddToken} />
 
   <h2>Colors</h2>
   {#if currentTokens.color}

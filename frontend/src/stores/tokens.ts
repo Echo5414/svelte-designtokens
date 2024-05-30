@@ -2,7 +2,7 @@ import { writable, type Writable } from 'svelte/store';
 import type { Tokens } from '../utils/localStorage';
 import sampleData from '../lib/schemasSample.json';
 
-const STORAGE_KEY = 'design-tokens';
+const STORAGE_KEY = import.meta.env.VITE_STORAGE_KEY;
 
 function getStoredTokens(): Tokens {
   if (typeof window !== 'undefined' && window.localStorage) {
@@ -19,6 +19,16 @@ export const tokensStore: Writable<Tokens> = writable<Tokens>(initialTokens);
 export function updateToken(type: keyof Tokens, id: string, updatedToken: Tokens[keyof Tokens][string]) {
   tokensStore.update((tokens) => {
     tokens[type][id] = updatedToken;
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(tokens));
+    }
+    return tokens;
+  });
+}
+
+export function addToken(type: keyof Tokens, id: string, newToken: Tokens[keyof Tokens][string]) {
+  tokensStore.update((tokens) => {
+    tokens[type][id] = newToken;
     if (typeof window !== 'undefined' && window.localStorage) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(tokens));
     }

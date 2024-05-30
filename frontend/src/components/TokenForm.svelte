@@ -1,9 +1,11 @@
 <script lang="ts">
-  import { tokensStore } from '../stores/tokens';
+  import { createEventDispatcher } from 'svelte';
   import { v4 as uuidv4 } from 'uuid';
   import type { Tokens, ColorToken, TypographyToken, SpacingToken } from '../utils/localStorage';
-
+  
   type Token = ColorToken | TypographyToken | SpacingToken;
+
+  const dispatch = createEventDispatcher();
 
   let type: keyof Tokens = 'color';
   let newToken: Token;
@@ -91,11 +93,8 @@
     } else if (newToken.$type === 'spacing') {
       newToken.$value = spacingValue;
     }
-    tokensStore.update((currentTokens) => {
-      const id = uuidv4();
-      currentTokens[type][id] = newToken;
-      return currentTokens;
-    });
+    const id = uuidv4();
+    dispatch('add', { id, token: newToken, type });
     initializeNewToken(type);
   }
 

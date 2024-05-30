@@ -1,15 +1,13 @@
 import sampleTokens from '../lib/schemasSample.json';
 
-export interface Extension {
-  name: string;
-}
-
 export interface ColorToken {
   $type: 'color';
   $description: string | null;
   $value: string;
   $extensions: {
-    [key: string]: Extension;
+    [key: string]: {
+      name: string;
+    };
   } | null;
 }
 
@@ -24,7 +22,9 @@ export interface TypographyToken {
     'letter-spacing': string;
   };
   $extensions: {
-    [key: string]: Extension;
+    [key: string]: {
+      name: string;
+    };
   } | null;
 }
 
@@ -33,7 +33,9 @@ export interface SpacingToken {
   $description: string | null;
   $value: string;
   $extensions: {
-    [key: string]: Extension;
+    [key: string]: {
+      name: string;
+    };
   } | null;
 }
 
@@ -46,7 +48,7 @@ export interface Tokens {
 
 export function loadTokens(): Tokens | null {
   if (typeof window !== 'undefined' && window.localStorage) {
-    const data = localStorage.getItem('design-tokens');
+    const data = localStorage.getItem(import.meta.env.VITE_STORAGE_KEY);
     return data ? JSON.parse(data) : null;
   }
   return null;
@@ -54,7 +56,7 @@ export function loadTokens(): Tokens | null {
 
 export function saveTokens(tokens: Tokens): void {
   if (typeof window !== 'undefined' && window.localStorage) {
-    localStorage.setItem('design-tokens', JSON.stringify(tokens));
+    localStorage.setItem(import.meta.env.VITE_STORAGE_KEY, JSON.stringify(tokens));
   }
 }
 
