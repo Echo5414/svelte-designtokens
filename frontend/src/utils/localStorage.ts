@@ -1,13 +1,15 @@
 import sampleTokens from '../lib/schemasSample.json';
 
+export interface Extension {
+  name: string;
+}
+
 export interface ColorToken {
   $type: 'color';
   $description: string | null;
   $value: string;
   $extensions: {
-    [key: string]: {
-      name: string;
-    };
+    [key: string]: Extension;
   } | null;
 }
 
@@ -22,9 +24,7 @@ export interface TypographyToken {
     'letter-spacing': string;
   };
   $extensions: {
-    [key: string]: {
-      name: string;
-    };
+    [key: string]: Extension;
   } | null;
 }
 
@@ -33,9 +33,7 @@ export interface SpacingToken {
   $description: string | null;
   $value: string;
   $extensions: {
-    [key: string]: {
-      name: string;
-    };
+    [key: string]: Extension;
   } | null;
 }
 

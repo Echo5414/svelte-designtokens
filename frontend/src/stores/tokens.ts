@@ -1,20 +1,16 @@
-// src/stores/tokens.ts
-
-import { writable } from 'svelte/store';
-import { loadTokens, saveTokens } from '../utils/localStorage';
-import sampleData from '../lib/schemasSample.json';
-import type { Writable } from 'svelte/store';
-
-// Importing the Tokens type from localStorage.ts
+import { writable, type Writable } from 'svelte/store';
 import type { Tokens } from '../utils/localStorage';
+import sampleData from '../lib/schemasSample.json';
 
-// Directly assert sampleData as Tokens
-const initialTokens = (loadTokens() || sampleData) as Tokens;
+const storedTokens = localStorage.getItem('designTokens');
+const initialTokens: Tokens = storedTokens ? JSON.parse(storedTokens) : sampleData;
 
 export const tokensStore: Writable<Tokens> = writable<Tokens>(initialTokens);
 
-tokensStore.subscribe((value: Tokens) => {
-  saveTokens(value);
-});
-
-
+export function updateToken(type: keyof Tokens, id: string, updatedToken: Tokens[keyof Tokens][string]) {
+  tokensStore.update((tokens: Tokens) => {
+    tokens[type][id] = updatedToken;
+    localStorage.setItem('designTokens', JSON.stringify(tokens));
+    return tokens;
+  });
+}

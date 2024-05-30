@@ -1,11 +1,15 @@
 <script lang="ts">
-  import { tokensStore } from '../stores/tokens';
+  import { tokensStore, updateToken } from '../stores/tokens';
   import ColorToken from '../components/ColorToken.svelte';
   import TypographyToken from '../components/TypographyToken.svelte';
   import SpacingToken from '../components/SpacingToken.svelte';
   import TokenForm from '../components/TokenForm.svelte';
   import { onMount } from 'svelte';
-  import type { Tokens } from '../utils/localStorage';
+  import type { Tokens, ColorToken as ColorTokenType, TypographyToken as TypographyTokenType, SpacingToken as SpacingTokenType } from '../utils/localStorage';
+  import sampleData from '../lib/schemasSample.json';
+  import type { Writable } from 'svelte/store';
+
+  const EXTENSION_NAMESPACE = import.meta.env.VITE_EXTENSION_NAMESPACE;
 
   let currentTokens: Tokens = { color: {}, typography: {}, spacing: {} };
 
@@ -21,6 +25,13 @@
       return tokens;
     });
   }
+
+  type TokenSaveEvent = CustomEvent<{ id: string; token: ColorTokenType | TypographyTokenType | SpacingTokenType; type: keyof Tokens }>;
+
+  function handleSaveToken(event: TokenSaveEvent) {
+    const { id, token, type } = event.detail;
+    updateToken(type, id, token);
+  }
 </script>
 
 <main>
@@ -32,7 +43,7 @@
   {#if currentTokens.color}
     {#each Object.entries(currentTokens.color) as [id, token]}
       <div class="token-container">
-        <ColorToken {id} {token} />
+        <ColorToken {id} {token} on:save={handleSaveToken} />
         <button class="delete-button" on:click={() => deleteToken(id, 'color')}>Delete</button>
       </div>
     {/each}
@@ -42,7 +53,7 @@
   {#if currentTokens.typography}
     {#each Object.entries(currentTokens.typography) as [id, token]}
       <div class="token-container">
-        <TypographyToken {id} {token} />
+        <TypographyToken {id} {token} on:save={handleSaveToken} />
         <button class="delete-button" on:click={() => deleteToken(id, 'typography')}>Delete</button>
       </div>
     {/each}
@@ -52,7 +63,7 @@
   {#if currentTokens.spacing}
     {#each Object.entries(currentTokens.spacing) as [id, token]}
       <div class="token-container">
-        <SpacingToken {id} {token} />
+        <SpacingToken {id} {token} on:save={handleSaveToken} />
         <button class="delete-button" on:click={() => deleteToken(id, 'spacing')}>Delete</button>
       </div>
     {/each}
