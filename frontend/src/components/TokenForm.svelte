@@ -1,7 +1,6 @@
 <script lang="ts">
   import { tokensStore } from '../stores/tokens';
   import { v4 as uuidv4 } from 'uuid';
-  import { EXTENSION_NAMESPACE } from '../../env';
   import type { Tokens, ColorToken, TypographyToken, SpacingToken } from '../utils/localStorage';
 
   type Token = ColorToken | TypographyToken | SpacingToken;
@@ -18,6 +17,8 @@
     'letter-spacing': '0px'
   };
   let spacingValue: string = '8px';
+
+  const EXTENSION_NAMESPACE = import.meta.env.VITE_EXTENSION_NAMESPACE;
 
   const initializeNewToken = (tokenType: keyof Tokens) => {
     name = '';
