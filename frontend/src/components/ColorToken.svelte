@@ -1,7 +1,15 @@
 <script lang="ts">
   const EXTENSION_NAMESPACE = import.meta.env.VITE_EXTENSION_NAMESPACE;
   export let id: string;
-  export let token: { $description: string | null; $value: string; $extensions: { [key: string]: { name: string } } | null };
+  export let token: {
+    $description: string | null;
+    $value: string;
+    $extensions: {
+      [key: string]: {
+        name: string;
+      };
+    } | null;
+  };
 
   let editMode = false;
   let editedToken = { ...token };
@@ -21,6 +29,7 @@
       detail: {
         id,
         token: editedToken,
+        type: 'color',
       },
     });
     dispatchEvent(saveEvent);

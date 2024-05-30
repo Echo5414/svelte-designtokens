@@ -1,4 +1,5 @@
 <script lang="ts">
+  const EXTENSION_NAMESPACE = import.meta.env.VITE_EXTENSION_NAMESPACE;
   export let id: string;
   export let token: {
     $description: string | null;
@@ -9,8 +10,6 @@
       };
     } | null;
   };
-
-  const EXTENSION_NAMESPACE = import.meta.env.VITE_EXTENSION_NAMESPACE;
 
   let editMode = false;
   let editedToken = { ...token };

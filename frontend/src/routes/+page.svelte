@@ -1,29 +1,25 @@
 <script lang="ts">
-  import { tokensStore, updateToken } from '../stores/tokens';
+  import { tokensStore, updateToken, deleteToken } from '../stores/tokens';
   import ColorToken from '../components/ColorToken.svelte';
   import TypographyToken from '../components/TypographyToken.svelte';
   import SpacingToken from '../components/SpacingToken.svelte';
   import TokenForm from '../components/TokenForm.svelte';
   import { onMount } from 'svelte';
   import type { Tokens, ColorToken as ColorTokenType, TypographyToken as TypographyTokenType, SpacingToken as SpacingTokenType } from '../utils/localStorage';
-  import sampleData from '../lib/schemasSample.json';
-  import type { Writable } from 'svelte/store';
 
   const EXTENSION_NAMESPACE = import.meta.env.VITE_EXTENSION_NAMESPACE;
 
   let currentTokens: Tokens = { color: {}, typography: {}, spacing: {} };
 
   onMount(() => {
-    tokensStore.subscribe((value: Tokens) => {
+    const unsubscribe = tokensStore.subscribe((value: Tokens) => {
       currentTokens = value;
     });
+    return unsubscribe;
   });
 
-  function deleteToken(id: string, tokenType: keyof Tokens) {
-    tokensStore.update((tokens) => {
-      delete tokens[tokenType][id];
-      return tokens;
-    });
+  function handleDeleteToken(id: string, tokenType: keyof Tokens) {
+    deleteToken(tokenType, id);
   }
 
   type TokenSaveEvent = CustomEvent<{ id: string; token: ColorTokenType | TypographyTokenType | SpacingTokenType; type: keyof Tokens }>;
@@ -44,7 +40,7 @@
     {#each Object.entries(currentTokens.color) as [id, token]}
       <div class="token-container">
         <ColorToken {id} {token} on:save={handleSaveToken} />
-        <button class="delete-button" on:click={() => deleteToken(id, 'color')}>Delete</button>
+        <button class="delete-button" on:click={() => handleDeleteToken(id, 'color')}>Delete</button>
       </div>
     {/each}
   {/if}
@@ -54,7 +50,7 @@
     {#each Object.entries(currentTokens.typography) as [id, token]}
       <div class="token-container">
         <TypographyToken {id} {token} on:save={handleSaveToken} />
-        <button class="delete-button" on:click={() => deleteToken(id, 'typography')}>Delete</button>
+        <button class="delete-button" on:click={() => handleDeleteToken(id, 'typography')}>Delete</button>
       </div>
     {/each}
   {/if}
@@ -64,7 +60,7 @@
     {#each Object.entries(currentTokens.spacing) as [id, token]}
       <div class="token-container">
         <SpacingToken {id} {token} on:save={handleSaveToken} />
-        <button class="delete-button" on:click={() => deleteToken(id, 'spacing')}>Delete</button>
+        <button class="delete-button" on:click={() => handleDeleteToken(id, 'spacing')}>Delete</button>
       </div>
     {/each}
   {/if}
