@@ -1,12 +1,12 @@
 // src/utils/localStorage.ts
 
+import sampleTokens from '../lib/schemasSample.json';
+
 export interface ColorToken {
   $type: 'color';
   $description: string | null;
   $value: string;
-  $extensions: {
-    name: string;
-  } | null;
+  $extensions: { name: string } | null;
 }
 
 export interface TypographyToken {
@@ -19,25 +19,21 @@ export interface TypographyToken {
     'line-height': number | string;
     'letter-spacing': string;
   };
-  $extensions: {
-    name: string;
-  } | null;
+  $extensions: { name: string } | null;
 }
 
 export interface SpacingToken {
   $type: 'spacing';
   $description: string | null;
   $value: string;
-  $extensions: {
-    name: string;
-  } | null;
+  $extensions: { name: string } | null;
 }
 
 export interface Tokens {
   color: Record<string, ColorToken>;
   typography: Record<string, TypographyToken>;
   spacing: Record<string, SpacingToken>;
-  [key: string]: Record<string, ColorToken | TypographyToken | SpacingToken>; // Index signature
+  [key: string]: Record<string, ColorToken | TypographyToken | SpacingToken>;
 }
 
 export function loadTokens(): Tokens | null {
@@ -53,3 +49,15 @@ export function saveTokens(tokens: Tokens): void {
     localStorage.setItem('design-tokens', JSON.stringify(tokens));
   }
 }
+
+export function initializeLocalStorage(): void {
+  if (typeof window !== 'undefined' && window.localStorage) {
+    const existingTokens = loadTokens();
+    if (!existingTokens) {
+      saveTokens(sampleTokens as unknown as Tokens);
+    }
+  }
+}
+
+// Initialize local storage on script load
+initializeLocalStorage();
