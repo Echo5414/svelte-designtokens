@@ -96,21 +96,20 @@
 
 <form on:submit|preventDefault={addToken}>
   <div>
-    <label for="name">Name:</label>
-    <input type="text" id="name" bind:value={name} />
-  </div>
-  <div>
-    <label for="description">Description:</label>
-    <input type="text" id="description" bind:value={newToken.$description} />
-  </div>
-
-  <div>
     <label for="type">Type:</label>
     <select id="type" bind:value={type} on:change={() => initializeNewToken(type)}>
       <option value="color">Color</option>
       <option value="typography">Typography</option>
       <option value="spacing">Spacing</option>
     </select>
+  </div>
+  <div>
+    <label for="name">Name:</label>
+    <input type="text" id="name" bind:value={name} />
+  </div>
+  <div>
+    <label for="description">Description:</label>
+    <input type="text" id="description" bind:value={newToken.$description} />
   </div>
 
   {#if newToken.$type === 'color'}
