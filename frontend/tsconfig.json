@@ -10,7 +10,9 @@
     "sourceMap": true,
     "strict": true,
     "moduleResolution": "bundler",
-    "baseUrl": "."
+    "baseUrl": ".",
+    "module": "ESNext",
+    "target": "ES6"
   },
   "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.js", "src/globals.d.ts"]
 }

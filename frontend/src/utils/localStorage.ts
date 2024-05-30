@@ -1,15 +1,15 @@
 // src/utils/localStorage.ts
 
-export type ColorToken = {
+export interface ColorToken {
   $type: 'color';
   $description: string | null;
   $value: string;
   $extensions: {
     name: string;
   } | null;
-};
+}
 
-export type TypographyToken = {
+export interface TypographyToken {
   $type: 'typography';
   $description: string | null;
   $value: {
@@ -22,22 +22,23 @@ export type TypographyToken = {
   $extensions: {
     name: string;
   } | null;
-};
+}
 
-export type SpacingToken = {
+export interface SpacingToken {
   $type: 'spacing';
   $description: string | null;
   $value: string;
   $extensions: {
     name: string;
   } | null;
-};
+}
 
-export type Tokens = {
+export interface Tokens {
   color: Record<string, ColorToken>;
   typography: Record<string, TypographyToken>;
   spacing: Record<string, SpacingToken>;
-};
+  [key: string]: Record<string, ColorToken | TypographyToken | SpacingToken>; // Index signature
+}
 
 export function loadTokens(): Tokens | null {
   if (typeof window !== 'undefined' && window.localStorage) {
@@ -47,7 +48,7 @@ export function loadTokens(): Tokens | null {
   return null;
 }
 
-export function saveTokens(tokens: Tokens) {
+export function saveTokens(tokens: Tokens): void {
   if (typeof window !== 'undefined' && window.localStorage) {
     localStorage.setItem('design-tokens', JSON.stringify(tokens));
   }
