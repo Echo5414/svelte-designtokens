@@ -1,6 +1,7 @@
 <script lang="ts">
   import { tokensStore } from '../stores/tokens';
   import { v4 as uuidv4 } from 'uuid';
+  import { EXTENSION_NAMESPACE } from '../../env';
   import type { Tokens, ColorToken, TypographyToken, SpacingToken } from '../utils/localStorage';
 
   type Token = ColorToken | TypographyToken | SpacingToken;
@@ -25,7 +26,11 @@
         $type: 'color',
         $description: '',
         $value: '#000000',
-        $extensions: { name: '' }
+        $extensions: {
+          [EXTENSION_NAMESPACE]: {
+            name: ''
+          }
+        }
       } as ColorToken;
       colorValue = '#000000';
     } else if (tokenType === 'typography') {
@@ -39,7 +44,11 @@
           'line-height': 1.2,
           'letter-spacing': '0px'
         },
-        $extensions: { name: '' }
+        $extensions: {
+          [EXTENSION_NAMESPACE]: {
+            name: ''
+          }
+        }
       } as TypographyToken;
       typographyValue = {
         'font-family': '',
@@ -53,7 +62,11 @@
         $type: 'spacing',
         $description: '',
         $value: '8px',
-        $extensions: { name: '' }
+        $extensions: {
+          [EXTENSION_NAMESPACE]: {
+            name: ''
+          }
+        }
       } as SpacingToken;
       spacingValue = '8px';
     }
@@ -63,7 +76,7 @@
 
   function addToken() {
     if (newToken.$extensions) {
-      newToken.$extensions.name = name;
+      newToken.$extensions[EXTENSION_NAMESPACE].name = name;
     }
     if (newToken.$type === 'color') {
       newToken.$value = colorValue;

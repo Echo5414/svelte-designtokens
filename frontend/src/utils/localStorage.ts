@@ -1,12 +1,14 @@
-// src/utils/localStorage.ts
-
 import sampleTokens from '../lib/schemasSample.json';
 
 export interface ColorToken {
   $type: 'color';
   $description: string | null;
   $value: string;
-  $extensions: { name: string } | null;
+  $extensions: {
+    [key: string]: {
+      name: string;
+    };
+  } | null;
 }
 
 export interface TypographyToken {
@@ -19,14 +21,22 @@ export interface TypographyToken {
     'line-height': number | string;
     'letter-spacing': string;
   };
-  $extensions: { name: string } | null;
+  $extensions: {
+    [key: string]: {
+      name: string;
+    };
+  } | null;
 }
 
 export interface SpacingToken {
   $type: 'spacing';
   $description: string | null;
   $value: string;
-  $extensions: { name: string } | null;
+  $extensions: {
+    [key: string]: {
+      name: string;
+    };
+  } | null;
 }
 
 export interface Tokens {
@@ -59,5 +69,4 @@ export function initializeLocalStorage(): void {
   }
 }
 
-// Initialize local storage on script load
 initializeLocalStorage();
