@@ -17,6 +17,11 @@
 
   function toggleEditMode() {
     editMode = !editMode;
+    if (!editMode) {
+      // Revert changes if canceling
+      editedToken = { ...token };
+      extensionName = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.name || '';
+    }
   }
 
   function handleSave() {
@@ -25,6 +30,7 @@
     } else {
       editedToken.$extensions = { [EXTENSION_NAMESPACE]: { name: extensionName } };
     }
+
     const saveEvent = new CustomEvent('save', {
       detail: {
         id,
@@ -35,6 +41,12 @@
     dispatchEvent(saveEvent);
     editMode = false;
   }
+
+  function handleCancel() {
+    editedToken = { ...token };
+    extensionName = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.name || '';
+    editMode = false;
+  }
 </script>
 
 <div>
@@ -43,7 +55,7 @@
     <input type="color" bind:value={editedToken.$value} placeholder="Value" />
     <input type="text" bind:value={extensionName} placeholder="Name" />
     <button on:click={handleSave}>Save</button>
-    <button on:click={toggleEditMode}>Cancel</button>
+    <button on:click={handleCancel}>Cancel</button>
   {:else}
     <p>{token.$description} - {token.$value} - {token.$extensions?.[EXTENSION_NAMESPACE]?.name}</p>
     <button on:click={toggleEditMode}>Edit</button>
