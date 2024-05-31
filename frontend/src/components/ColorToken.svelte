@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createEventDispatcher } from 'svelte';
   const EXTENSION_NAMESPACE = import.meta.env.VITE_EXTENSION_NAMESPACE;
   export let id: string;
   export let token: {
@@ -14,6 +15,7 @@
   let editMode = false;
   let editedToken = { ...token };
   let extensionName = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.name || '';
+  const dispatch = createEventDispatcher();
 
   function toggleEditMode() {
     editMode = !editMode;
@@ -31,14 +33,11 @@
       editedToken.$extensions = { [EXTENSION_NAMESPACE]: { name: extensionName } };
     }
 
-    const saveEvent = new CustomEvent('save', {
-      detail: {
-        id,
-        token: editedToken,
-        type: 'color',
-      },
+    dispatch('save', {
+      id,
+      token: editedToken,
+      type: 'color',
     });
-    dispatchEvent(saveEvent);
     editMode = false;
   }
 
