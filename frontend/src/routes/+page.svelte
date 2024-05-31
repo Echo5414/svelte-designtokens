@@ -15,11 +15,12 @@
     const unsubscribe = tokensStore.subscribe((value: Tokens) => {
       currentTokens = value;
     });
-    return unsubscribe;
+    return unsubscribe();
   });
 
-  function handleDeleteToken(id: string, tokenType: keyof Tokens) {
-    deleteToken(tokenType, id);
+  function handleDeleteToken(event: CustomEvent<{ id: string; type: keyof Tokens }>) {
+    const { id, type } = event.detail;
+    deleteToken(type, id);
   }
 
   type TokenEventDetail = { id: string; token: ColorTokenType | TypographyTokenType | SpacingTokenType; type: keyof Tokens };
@@ -44,8 +45,7 @@
   {#if currentTokens.color}
     {#each Object.entries(currentTokens.color) as [id, token]}
       <div class="token-container">
-        <ColorToken {id} {token} on:save={handleSaveToken} />
-        <button class="delete-button" on:click={() => handleDeleteToken(id, 'color')}>Delete</button>
+        <ColorToken {id} {token} on:save={handleSaveToken} on:delete={handleDeleteToken} />
       </div>
     {/each}
   {/if}
@@ -54,8 +54,7 @@
   {#if currentTokens.typography}
     {#each Object.entries(currentTokens.typography) as [id, token]}
       <div class="token-container">
-        <TypographyToken {id} {token} on:save={handleSaveToken} />
-        <button class="delete-button" on:click={() => handleDeleteToken(id, 'typography')}>Delete</button>
+        <TypographyToken {id} {token} on:save={handleSaveToken} on:delete={handleDeleteToken} />
       </div>
     {/each}
   {/if}
@@ -64,20 +63,27 @@
   {#if currentTokens.spacing}
     {#each Object.entries(currentTokens.spacing) as [id, token]}
       <div class="token-container">
-        <SpacingToken {id} {token} on:save={handleSaveToken} />
-        <button class="delete-button" on:click={() => handleDeleteToken(id, 'spacing')}>Delete</button>
+        <SpacingToken {id} {token} on:save={handleSaveToken} on:delete={handleDeleteToken} />
       </div>
     {/each}
   {/if}
 </main>
 
 <style>
+  main {
+    background-color: var(--primary-color);
+  }
   .token-container {
     display: flex;
     align-items: center;
     margin-bottom: 1rem;
   }
   .delete-button {
-    margin-left: 1rem;
+    height: 100%;
+  }
+  button {
+    margin-left: 10px;
   }
 </style>
+
+

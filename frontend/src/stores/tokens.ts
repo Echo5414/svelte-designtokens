@@ -25,20 +25,20 @@ tokensStore.subscribe((tokens) => {
 export function updateToken(type: keyof Tokens, id: string, updatedToken: Tokens[keyof Tokens][string]) {
   tokensStore.update((tokens) => {
     tokens[type][id] = updatedToken;
-    return tokens;
+    return { ...tokens }; // Create a new object reference
   });
 }
 
 export function addToken(type: keyof Tokens, id: string, newToken: Tokens[keyof Tokens][string]) {
   tokensStore.update((tokens) => {
     tokens[type][id] = newToken;
-    return tokens;
+    return { ...tokens }; // Create a new object reference
   });
 }
 
 export function deleteToken(type: keyof Tokens, id: string) {
   tokensStore.update((tokens) => {
     delete tokens[type][id];
-    return tokens;
+    return { ...tokens }; // Create a new object reference
   });
 }
