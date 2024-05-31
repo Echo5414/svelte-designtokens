@@ -93,9 +93,9 @@
 
 <div class="list">
   {#if editMode}
+    <input type="text" bind:value={extensionName} placeholder="Name" class="cell" />
     <input type="text" bind:value={editedToken.$description} placeholder="Description" class="cell" />
     <input type="color" bind:value={editedToken.$value} placeholder="Value" class="cell" />
-    <input type="text" bind:value={extensionName} placeholder="Name" class="cell" />
     <button on:click={handleSave} class="cell">Save</button>
     <button on:click={handleCancel} class="cell">Cancel</button>
   {:else}
@@ -112,8 +112,11 @@
         {token.$extensions?.[EXTENSION_NAMESPACE]?.name}
       </div>
     {/if}
-    <p class="cell">{token.$description} - {token.$value}</p>
-    <div class="color-swatch" style="background-color: {token.$value};"></div>
+    <p class="cell">{token.$description}</p>
+    <div class="color">
+      <span class="color-swatch" style="background-color: {token.$value};"></span>
+      <p>{token.$value}</p>
+    </div> 
     <button on:click={toggleEditMode} class="cell">Edit</button>
   {/if}
   <button on:click={handleDelete} class="cell">Delete</button>
@@ -127,6 +130,10 @@
     background-color: rgb(208, 206, 206);
     align-items: center;
   }
+  .color {
+    display: flex;
+    align-items: center;
+  }
   .cell {
     padding: 8px;
   }
@@ -137,8 +144,10 @@
     outline: 2px solid blue;
   }
   .color-swatch {
-    width: 100%;
-    height: 50%;
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border-radius: 2px;
   }
   button {
     height: 100%;
