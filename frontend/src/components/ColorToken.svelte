@@ -20,6 +20,7 @@
   let extensionName = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.name || '';
   const dispatch = createEventDispatcher();
   let nameInputElement: HTMLInputElement | null = null;
+  let isFocusing = false;
 
   function toggleEditMode() {
     editMode = !editMode;
@@ -30,6 +31,7 @@
   }
 
   function handleSave() {
+    console.log('handleSave triggered for id:', id);
     if (editedToken.$extensions) {
       editedToken.$extensions[EXTENSION_NAMESPACE] = { name: extensionName };
     } else {
@@ -46,6 +48,7 @@
   }
 
   function handleCancel() {
+    console.log('handleCancel triggered for id:', id);
     editedToken = { ...token };
     extensionName = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.name || '';
     editMode = false;
@@ -53,15 +56,21 @@
   }
 
   function handleDelete() {
+    console.log('handleDelete triggered for id:', id);
     dispatch('delete', { id, type: 'color' });
   }
 
   function handleNameBlur() {
-    handleSave();
+    console.log('handleNameBlur triggered for id:', id);
+    if (!isFocusing) {
+      handleSave();
+    }
   }
 
   function handleNameDoubleClick() {
+    console.log('Double click detected for id:', id);
     setCurrentlyEditingId(id);
+    console.log('currentlyEditingId set to:', id);
   }
 
   function handleKeyDown(event: KeyboardEvent) {
@@ -76,6 +85,16 @@
     }
   }
 
+  function handleFocus() {
+    console.log('handleFocus triggered for id:', id);
+    isFocusing = true;
+  }
+
+  function handleFocusOut() {
+    console.log('handleFocusOut triggered for id:', id);
+    isFocusing = false;
+  }
+
   onMount(() => {
     document.addEventListener('click', handleClickOutside);
   });
@@ -85,6 +104,7 @@
   });
 
   $: {
+    console.log('Reactive update: currentlyEditingId:', currentlyEditingId, 'id:', id);
     if (currentlyEditingId === id && nameInputElement) {
       nameInputElement.focus();
     }
@@ -100,7 +120,7 @@
     <button on:click={handleCancel} class="cell">Cancel</button>
   {:else}
     {#if currentlyEditingId === id}
-      <input type="text" bind:value={extensionName} on:blur={handleNameBlur} on:keydown={handleKeyDown} class="cell" bind:this={nameInputElement} />
+      <input type="text" bind:value={extensionName} on:focus={handleFocus} on:blur={handleNameBlur} on:focusout={handleFocusOut} on:keydown={handleKeyDown} class="cell" bind:this={nameInputElement} />
     {:else}
       <div
         class="cell editable-name"
@@ -116,7 +136,7 @@
     <div class="color">
       <span class="color-swatch" style="background-color: {token.$value};"></span>
       <p>{token.$value}</p>
-    </div> 
+    </div>
     <button on:click={toggleEditMode} class="cell">Edit</button>
   {/if}
   <button on:click={handleDelete} class="cell">Delete</button>
@@ -124,7 +144,7 @@
 
 <style>
   .list {
-    display: grid; 
+    display: grid;
     grid-template-columns: repeat(6, auto);
     width: 100%;
     background-color: rgb(208, 206, 206);

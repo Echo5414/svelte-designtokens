@@ -10,7 +10,9 @@
   const EXTENSION_NAMESPACE = import.meta.env.VITE_EXTENSION_NAMESPACE;
 
   let currentTokens: Tokens = { color: {}, typography: {}, spacing: {} };
-  let currentlyEditingId: string | null = null;
+  let currentlyEditingColorId: string | null = null;
+  let currentlyEditingTypographyId: string | null = null;
+  let currentlyEditingSpacingId: string | null = null;
 
   onMount(() => {
     const unsubscribe = tokensStore.subscribe((value: Tokens) => {
@@ -36,8 +38,10 @@
     updateToken(type, id, token);
   }
 
-  function setCurrentlyEditingId(id: string | null) {
-    currentlyEditingId = id;
+  function setCurrentlyEditingId(id: string | null, type: keyof Tokens) {
+    if (type === 'color') currentlyEditingColorId = id;
+    if (type === 'typography') currentlyEditingTypographyId = id;
+    if (type === 'spacing') currentlyEditingSpacingId = id;
   }
 </script>
 
@@ -50,7 +54,14 @@
   {#if currentTokens.color}
     {#each Object.entries(currentTokens.color) as [id, token]}
       <div class="token-container">
-        <ColorToken {id} {token} {currentlyEditingId} {setCurrentlyEditingId} on:save={handleSaveToken} on:delete={handleDeleteToken} />
+        <ColorToken 
+          {id} 
+          {token} 
+          currentlyEditingId={currentlyEditingColorId} 
+          setCurrentlyEditingId={(id) => setCurrentlyEditingId(id, 'color')} 
+          on:save={handleSaveToken} 
+          on:delete={handleDeleteToken} 
+        />
       </div>
     {/each}
   {/if}
@@ -59,7 +70,14 @@
   {#if currentTokens.typography}
     {#each Object.entries(currentTokens.typography) as [id, token]}
       <div class="token-container">
-        <TypographyToken {id} {token} {currentlyEditingId} {setCurrentlyEditingId} on:save={handleSaveToken} on:delete={handleDeleteToken} />
+        <TypographyToken 
+          {id} 
+          {token} 
+          currentlyEditingId={currentlyEditingTypographyId} 
+          setCurrentlyEditingId={(id) => setCurrentlyEditingId(id, 'typography')} 
+          on:save={handleSaveToken} 
+          on:delete={handleDeleteToken} 
+        />
       </div>
     {/each}
   {/if}
@@ -68,7 +86,14 @@
   {#if currentTokens.spacing}
     {#each Object.entries(currentTokens.spacing) as [id, token]}
       <div class="token-container">
-        <SpacingToken {id} {token} {currentlyEditingId} {setCurrentlyEditingId} on:save={handleSaveToken} on:delete={handleDeleteToken} />
+        <SpacingToken 
+          {id} 
+          {token} 
+          currentlyEditingId={currentlyEditingSpacingId} 
+          setCurrentlyEditingId={(id) => setCurrentlyEditingId(id, 'spacing')} 
+          on:save={handleSaveToken} 
+          on:delete={handleDeleteToken} 
+        />
       </div>
     {/each}
   {/if}
