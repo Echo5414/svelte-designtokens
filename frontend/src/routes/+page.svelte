@@ -10,12 +10,13 @@
   const EXTENSION_NAMESPACE = import.meta.env.VITE_EXTENSION_NAMESPACE;
 
   let currentTokens: Tokens = { color: {}, typography: {}, spacing: {} };
+  let currentlyEditingId: string | null = null;
 
   onMount(() => {
     const unsubscribe = tokensStore.subscribe((value: Tokens) => {
       currentTokens = value;
     });
-    return unsubscribe();
+    return unsubscribe;
   });
 
   function handleDeleteToken(event: CustomEvent<{ id: string; type: keyof Tokens }>) {
@@ -34,6 +35,10 @@
     const { id, token, type } = event.detail;
     updateToken(type, id, token);
   }
+
+  function setCurrentlyEditingId(id: string | null) {
+    currentlyEditingId = id;
+  }
 </script>
 
 <main>
@@ -45,7 +50,7 @@
   {#if currentTokens.color}
     {#each Object.entries(currentTokens.color) as [id, token]}
       <div class="token-container">
-        <ColorToken {id} {token} on:save={handleSaveToken} on:delete={handleDeleteToken} />
+        <ColorToken {id} {token} {currentlyEditingId} {setCurrentlyEditingId} on:save={handleSaveToken} on:delete={handleDeleteToken} />
       </div>
     {/each}
   {/if}
@@ -78,12 +83,4 @@
     align-items: center;
     margin-bottom: 1rem;
   }
-  .delete-button {
-    height: 100%;
-  }
-  button {
-    margin-left: 10px;
-  }
 </style>
-
-

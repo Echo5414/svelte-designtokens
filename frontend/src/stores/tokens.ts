@@ -24,21 +24,23 @@ tokensStore.subscribe((tokens) => {
 
 export function updateToken(type: keyof Tokens, id: string, updatedToken: Tokens[keyof Tokens][string]) {
   tokensStore.update((tokens) => {
-    tokens[type][id] = updatedToken;
-    return { ...tokens }; // Create a new object reference
+    const updatedTokens = { ...tokens, [type]: { ...tokens[type], [id]: updatedToken } };
+    return updatedTokens; // Create a new object reference
   });
 }
 
 export function addToken(type: keyof Tokens, id: string, newToken: Tokens[keyof Tokens][string]) {
   tokensStore.update((tokens) => {
-    tokens[type][id] = newToken;
-    return { ...tokens }; // Create a new object reference
+    const updatedTokens = { ...tokens, [type]: { ...tokens[type], [id]: newToken } };
+    return updatedTokens; // Create a new object reference
   });
 }
 
 export function deleteToken(type: keyof Tokens, id: string) {
   tokensStore.update((tokens) => {
-    delete tokens[type][id];
-    return { ...tokens }; // Create a new object reference
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { [id]: _unused, ...remainingTokens } = tokens[type];
+    const updatedTokens = { ...tokens, [type]: remainingTokens };
+    return updatedTokens; // Create a new object reference
   });
 }

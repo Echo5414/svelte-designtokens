@@ -8,7 +8,7 @@
       'font-family': string;
       'font-size': string;
       'font-weight': number;
-      'line-height': string | number;
+      'line-height': number | string;
       'letter-spacing': string;
     };
     $extensions: {
@@ -26,7 +26,6 @@
   function toggleEditMode() {
     editMode = !editMode;
     if (!editMode) {
-      // Revert changes if canceling
       editedToken = { ...token };
       extensionName = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.name || '';
     }
@@ -52,21 +51,49 @@
     extensionName = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.name || '';
     editMode = false;
   }
+
+  function handleDelete() {
+    dispatch('delete', { id, type: 'typography' });
+  }
 </script>
 
-<div>
+<div class="list">
   {#if editMode}
-    <input type="text" bind:value={editedToken.$description} placeholder="Description" />
-    <input type="text" bind:value={editedToken.$value['font-family']} placeholder="Font Family" />
-    <input type="text" bind:value={editedToken.$value['font-size']} placeholder="Font Size" />
-    <input type="number" bind:value={editedToken.$value['font-weight']} placeholder="Font Weight" />
-    <input type="text" bind:value={editedToken.$value['line-height']} placeholder="Line Height" />
-    <input type="text" bind:value={editedToken.$value['letter-spacing']} placeholder="Letter Spacing" />
-    <input type="text" bind:value={extensionName} placeholder="Name" />
-    <button on:click={handleSave}>Save</button>
-    <button on:click={handleCancel}>Cancel</button>
+    <input type="text" bind:value={extensionName} placeholder="Name" class="cell" />
+    <input type="text" bind:value={editedToken.$description} placeholder="Description" class="cell" />
+    <input type="text" bind:value={editedToken.$value['font-family']} placeholder="Font Family" class="cell" />
+    <input type="text" bind:value={editedToken.$value['font-size']} placeholder="Font Size" class="cell" />
+    <input type="number" bind:value={editedToken.$value['font-weight']} placeholder="Font Weight" class="cell" />
+    <input type="text" bind:value={editedToken.$value['line-height']} placeholder="Line Height" class="cell" />
+    <input type="text" bind:value={editedToken.$value['letter-spacing']} placeholder="Letter Spacing" class="cell" />
+    <button on:click={handleSave} class="cell">Save</button>
+    <button on:click={handleCancel} class="cell">Cancel</button>
   {:else}
-    <p>{token.$description} - {token.$value['font-family']} - {token.$value['font-size']} - {token.$extensions?.[EXTENSION_NAMESPACE]?.name}</p>
-    <button on:click={toggleEditMode}>Edit</button>
+    <p class="cell">{token.$extensions?.[EXTENSION_NAMESPACE]?.name}</p>
+    <p>{token.$description}</p>
+    <p>{token.$value['font-family']}</p>
+    <p>{token.$value['font-size']}</p>
+    <p>{token.$value['font-weight']}</p>
+    <p>{token.$value['line-height']}</p>
+    <p>{token.$value['letter-spacing']}</p>
+    <button on:click={toggleEditMode} class="cell">Edit</button>
   {/if}
+  <button on:click={handleDelete} class="cell">Delete</button>
 </div>
+
+<style>
+  .list {
+    display: grid; 
+    grid-template-columns: repeat(9, auto);
+    width: 100%;
+    background-color: rgb(208, 206, 206);
+    align-items: center;
+  }
+  .cell {
+    padding: 8px;
+  }
+  button {
+    height: 100%;
+    width: auto;
+  }
+</style>

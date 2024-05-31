@@ -20,7 +20,6 @@
   function toggleEditMode() {
     editMode = !editMode;
     if (!editMode) {
-      // Revert changes if canceling
       editedToken = { ...token };
       extensionName = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.name || '';
     }
@@ -46,17 +45,48 @@
     extensionName = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.name || '';
     editMode = false;
   }
+
+  function handleDelete() {
+    dispatch('delete', { id, type: 'spacing' });
+  }
 </script>
 
-<div>
+<div class="list">
   {#if editMode}
-    <input type="text" bind:value={editedToken.$description} placeholder="Description" />
-    <input type="text" bind:value={editedToken.$value} placeholder="Value" />
-    <input type="text" bind:value={extensionName} placeholder="Name" />
-    <button on:click={handleSave}>Save</button>
-    <button on:click={handleCancel}>Cancel</button>
+  <input type="text" bind:value={extensionName} placeholder="Name" class="cell" />
+    <input type="text" bind:value={editedToken.$description} placeholder="Description" class="cell" />
+    <input type="text" bind:value={editedToken.$value} placeholder="Value" class="cell" />
+    <button on:click={handleSave} class="cell">Save</button>
+    <button on:click={handleCancel} class="cell">Cancel</button>
   {:else}
-    <p>{token.$description} - {token.$value} - {token.$extensions?.[EXTENSION_NAMESPACE]?.name}</p>
-    <button on:click={toggleEditMode}>Edit</button>
+    <p class="cell">{token.$extensions?.[EXTENSION_NAMESPACE]?.name}</p>
+    <p class="cell">{token.$description}</p>
+    <p>{token.$value}</p>
+    <div class="spacing-swatch cell">
+      Example Spacing
+    </div>
+    <button on:click={toggleEditMode} class="cell">Edit</button>
   {/if}
+  <button on:click={handleDelete} class="cell">Delete</button>
 </div>
+
+<style>
+  .list {
+    display: grid; 
+    grid-template-columns: repeat(6, auto);
+    width: 100%;
+    background-color: rgb(208, 206, 206);
+    align-items: center;
+  }
+  .cell {
+    padding: 8px, 0px 8px 0px;
+  }
+  .spacing-swatch {
+    width: 100%;
+    height: 50%;
+  }
+  button {
+    height: 100%;
+    width: auto;
+  }
+</style>
