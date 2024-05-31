@@ -43,10 +43,13 @@ export interface Tokens {
   color: Record<string, ColorToken>;
   typography: Record<string, TypographyToken>;
   spacing: Record<string, SpacingToken>;
-  [key: string]: Record<string, ColorToken | TypographyToken | SpacingToken>;
 }
 
-export function loadTokens(): Tokens | null {
+export interface Collection {
+  [name: string]: Tokens;
+}
+
+export function loadTokens(): Collection | null {
   if (typeof window !== 'undefined' && window.localStorage) {
     const data = localStorage.getItem(import.meta.env.VITE_STORAGE_KEY);
     return data ? JSON.parse(data) : null;
@@ -54,7 +57,7 @@ export function loadTokens(): Tokens | null {
   return null;
 }
 
-export function saveTokens(tokens: Tokens): void {
+export function saveTokens(tokens: Collection): void {
   if (typeof window !== 'undefined' && window.localStorage) {
     localStorage.setItem(import.meta.env.VITE_STORAGE_KEY, JSON.stringify(tokens));
   }
@@ -64,7 +67,7 @@ export function initializeLocalStorage(): void {
   if (typeof window !== 'undefined' && window.localStorage) {
     const existingTokens = loadTokens();
     if (!existingTokens) {
-      saveTokens(sampleTokens as unknown as Tokens);
+      saveTokens(sampleTokens as unknown as Collection);
     }
   }
 }
