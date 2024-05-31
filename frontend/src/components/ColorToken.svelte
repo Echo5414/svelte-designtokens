@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount, onDestroy } from 'svelte';
   const EXTENSION_NAMESPACE = import.meta.env.VITE_EXTENSION_NAMESPACE;
   export let id: string;
   export let token: {
+    $type: 'color';
     $description: string | null;
     $value: string;
     $extensions: {
@@ -18,6 +19,7 @@
   let editedToken = { ...token };
   let extensionName = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.name || '';
   const dispatch = createEventDispatcher();
+  let nameInputElement: HTMLInputElement | null = null;
 
   function toggleEditMode() {
     editMode = !editMode;
@@ -58,13 +60,33 @@
     handleSave();
   }
 
-  function handleNameClick() {
+  function handleNameDoubleClick() {
     setCurrentlyEditingId(id);
   }
 
   function handleKeyDown(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       handleSave();
+    }
+  }
+
+  function handleClickOutside(event: MouseEvent) {
+    if (currentlyEditingId === id && !(event.target as HTMLElement).closest('.list')) {
+      handleSave();
+    }
+  }
+
+  onMount(() => {
+    document.addEventListener('click', handleClickOutside);
+  });
+
+  onDestroy(() => {
+    document.removeEventListener('click', handleClickOutside);
+  });
+
+  $: {
+    if (currentlyEditingId === id && nameInputElement) {
+      nameInputElement.focus();
     }
   }
 </script>
@@ -78,9 +100,17 @@
     <button on:click={handleCancel} class="cell">Cancel</button>
   {:else}
     {#if currentlyEditingId === id}
-      <input type="text" bind:value={extensionName} on:blur={handleNameBlur} on:keydown={handleKeyDown} class="cell" />
+      <input type="text" bind:value={extensionName} on:blur={handleNameBlur} on:keydown={handleKeyDown} class="cell" bind:this={nameInputElement} />
     {:else}
-      <p class="cell" on:click={handleNameClick}>{token.$extensions?.[EXTENSION_NAMESPACE]?.name}</p>
+      <div
+        class="cell editable-name"
+        role="button"
+        tabindex="0"
+        on:dblclick={handleNameDoubleClick}
+        on:keydown={(e) => e.key === 'Enter' && handleNameDoubleClick()}
+      >
+        {token.$extensions?.[EXTENSION_NAMESPACE]?.name}
+      </div>
     {/if}
     <p class="cell">{token.$description} - {token.$value}</p>
     <div class="color-swatch" style="background-color: {token.$value};"></div>
@@ -99,6 +129,12 @@
   }
   .cell {
     padding: 8px;
+  }
+  .editable-name {
+    cursor: pointer;
+  }
+  .editable-name:focus {
+    outline: 2px solid blue;
   }
   .color-swatch {
     width: 100%;

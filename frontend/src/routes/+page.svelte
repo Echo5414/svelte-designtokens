@@ -55,11 +55,11 @@
     {/each}
   {/if}
 
-  <h2>Typography</h2>
+<!--   <h2>Typography</h2>
   {#if currentTokens.typography}
     {#each Object.entries(currentTokens.typography) as [id, token]}
       <div class="token-container">
-        <TypographyToken {id} {token} on:save={handleSaveToken} on:delete={handleDeleteToken} />
+        <TypographyToken {id} {token} {currentlyEditingId} {setCurrentlyEditingId} on:save={handleSaveToken} on:delete={handleDeleteToken} />
       </div>
     {/each}
   {/if}
@@ -68,11 +68,11 @@
   {#if currentTokens.spacing}
     {#each Object.entries(currentTokens.spacing) as [id, token]}
       <div class="token-container">
-        <SpacingToken {id} {token} on:save={handleSaveToken} on:delete={handleDeleteToken} />
+        <SpacingToken {id} {token} {currentlyEditingId} {setCurrentlyEditingId} on:save={handleSaveToken} on:delete={handleDeleteToken} />
       </div>
     {/each}
-  {/if}
-</main>
+  {/if}-->
+</main> 
 
 <style>
   main {
