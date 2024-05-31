@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount, onDestroy } from 'svelte';
   const EXTENSION_NAMESPACE = import.meta.env.VITE_EXTENSION_NAMESPACE;
   export let id: string;
   export let token: {
+    $type: 'typography';
     $description: string | null;
     $value: {
       'font-family': string;
@@ -17,11 +18,14 @@
       };
     } | null;
   };
+  export let currentlyEditingId: string | null;
+  export let setCurrentlyEditingId: (id: string | null) => void;
 
   let editMode = false;
   let editedToken = { ...token };
   let extensionName = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.name || '';
   const dispatch = createEventDispatcher();
+  let nameInputElement: HTMLInputElement | null = null;
 
   function toggleEditMode() {
     editMode = !editMode;
@@ -44,16 +48,52 @@
       type: 'typography',
     });
     editMode = false;
+    setCurrentlyEditingId(null);
   }
 
   function handleCancel() {
     editedToken = { ...token };
     extensionName = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.name || '';
     editMode = false;
+    setCurrentlyEditingId(null);
   }
 
   function handleDelete() {
     dispatch('delete', { id, type: 'typography' });
+  }
+
+  function handleNameBlur() {
+    handleSave();
+  }
+
+  function handleNameDoubleClick() {
+    setCurrentlyEditingId(id);
+  }
+
+  function handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Enter') {
+      handleSave();
+    }
+  }
+
+  function handleClickOutside(event: MouseEvent) {
+    if (currentlyEditingId === id && !(event.target as HTMLElement).closest('.list')) {
+      handleSave();
+    }
+  }
+
+  onMount(() => {
+    document.addEventListener('click', handleClickOutside);
+  });
+
+  onDestroy(() => {
+    document.removeEventListener('click', handleClickOutside);
+  });
+
+  $: {
+    if (currentlyEditingId === id && nameInputElement) {
+      nameInputElement.focus();
+    }
   }
 </script>
 
@@ -69,13 +109,25 @@
     <button on:click={handleSave} class="cell">Save</button>
     <button on:click={handleCancel} class="cell">Cancel</button>
   {:else}
-    <p class="cell">{token.$extensions?.[EXTENSION_NAMESPACE]?.name}</p>
-    <p>{token.$description}</p>
-    <p>{token.$value['font-family']}</p>
-    <p>{token.$value['font-size']}</p>
-    <p>{token.$value['font-weight']}</p>
-    <p>{token.$value['line-height']}</p>
-    <p>{token.$value['letter-spacing']}</p>
+    {#if currentlyEditingId === id}
+      <input type="text" bind:value={extensionName} on:blur={handleNameBlur} on:keydown={handleKeyDown} class="cell" bind:this={nameInputElement} />
+    {:else}
+      <div
+        class="cell editable-name"
+        role="button"
+        tabindex="0"
+        on:dblclick={handleNameDoubleClick}
+        on:keydown={(e) => e.key === 'Enter' && handleNameDoubleClick()}
+      >
+        {token.$extensions?.[EXTENSION_NAMESPACE]?.name}
+      </div>
+    {/if}
+    <p class="cell">{token.$description}</p>
+    <p class="cell">{token.$value['font-family']}</p>
+    <p class="cell">{token.$value['font-size']}</p>
+    <p class="cell">{token.$value['font-weight']}</p>
+    <p class="cell">{token.$value['line-height']}</p>
+    <p class="cell">{token.$value['letter-spacing']}</p>
     <button on:click={toggleEditMode} class="cell">Edit</button>
   {/if}
   <button on:click={handleDelete} class="cell">Delete</button>
@@ -84,13 +136,19 @@
 <style>
   .list {
     display: grid; 
-    grid-template-columns: repeat(9, auto);
+    grid-template-columns: repeat(10, auto);
     width: 100%;
     background-color: rgb(208, 206, 206);
     align-items: center;
   }
   .cell {
     padding: 8px;
+  }
+  .editable-name {
+    cursor: pointer;
+  }
+  .editable-name:focus {
+    outline: 2px solid blue;
   }
   button {
     height: 100%;

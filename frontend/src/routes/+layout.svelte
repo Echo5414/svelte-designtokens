@@ -25,8 +25,4 @@
   :global(:root) {
     --primary-color: #22ff00; /* Default value */
   }
-  body {
-    margin: 0;
-    padding: 0;
-  }
 </style>
