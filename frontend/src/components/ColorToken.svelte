@@ -1,5 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+  import { tokensStore } from '../stores/tokens';
   const EXTENSION_NAMESPACE = import.meta.env.VITE_EXTENSION_NAMESPACE;
   export let id: string;
   export let token: {
@@ -9,15 +10,18 @@
     $extensions: {
       [key: string]: {
         name: string;
+        reference?: string; // Reference to another color token
       };
     } | null;
   };
   export let currentlyEditingId: string | null;
   export let setCurrentlyEditingId: (id: string | null) => void;
+  export let isPrimitive: boolean = false; // New prop to indicate if the token is a primitive
 
   let editMode = false;
   let editedToken = { ...token };
   let extensionName = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.name || '';
+  let reference = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.reference || '';
   const dispatch = createEventDispatcher();
   let nameInputElement: HTMLInputElement | null = null;
   let isFocusing = false;
@@ -27,15 +31,15 @@
     if (!editMode) {
       editedToken = { ...token };
       extensionName = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.name || '';
+      reference = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.reference || '';
     }
   }
 
   function handleSave() {
-    console.log('handleSave triggered for id:', id);
     if (editedToken.$extensions) {
-      editedToken.$extensions[EXTENSION_NAMESPACE] = { name: extensionName };
+      editedToken.$extensions[EXTENSION_NAMESPACE] = { name: extensionName, reference: isPrimitive ? undefined : reference };
     } else {
-      editedToken.$extensions = { [EXTENSION_NAMESPACE]: { name: extensionName } };
+      editedToken.$extensions = { [EXTENSION_NAMESPACE]: { name: extensionName, reference: isPrimitive ? undefined : reference } };
     }
 
     dispatch('save', {
@@ -48,29 +52,27 @@
   }
 
   function handleCancel() {
-    console.log('handleCancel triggered for id:', id);
     editedToken = { ...token };
     extensionName = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.name || '';
+    reference = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.reference || '';
     editMode = false;
     setCurrentlyEditingId(null);
   }
 
   function handleDelete() {
-    console.log('handleDelete triggered for id:', id);
     dispatch('delete', { id, type: 'color' });
   }
 
   function handleNameBlur() {
-    console.log('handleNameBlur triggered for id:', id);
-    if (!isFocusing) {
-      handleSave();
-    }
+    setTimeout(() => {
+      if (!isFocusing && currentlyEditingId === id) {
+        handleSave();
+      }
+    }, 200);
   }
 
   function handleNameDoubleClick() {
-    console.log('Double click detected for id:', id);
     setCurrentlyEditingId(id);
-    console.log('currentlyEditingId set to:', id);
   }
 
   function handleKeyDown(event: KeyboardEvent) {
@@ -86,12 +88,10 @@
   }
 
   function handleFocus() {
-    console.log('handleFocus triggered for id:', id);
     isFocusing = true;
   }
 
   function handleFocusOut() {
-    console.log('handleFocusOut triggered for id:', id);
     isFocusing = false;
   }
 
@@ -104,7 +104,6 @@
   });
 
   $: {
-    console.log('Reactive update: currentlyEditingId:', currentlyEditingId, 'id:', id);
     if (currentlyEditingId === id && nameInputElement) {
       nameInputElement.focus();
     }
@@ -115,7 +114,30 @@
   {#if editMode}
     <input type="text" bind:value={extensionName} placeholder="Name" class="cell" />
     <input type="text" bind:value={editedToken.$description} placeholder="Description" class="cell" />
-    <input type="color" bind:value={editedToken.$value} placeholder="Value" class="cell" />
+    
+    {#if !isPrimitive}
+      <div>
+        <label>
+          <input type="radio" bind:group={reference} value={''} /> Pick Color
+        </label>
+        <label>
+          <input type="radio" bind:group={reference} value={'reference'} /> Reference Color
+        </label>
+      </div>
+
+      {#if reference}
+        <select bind:value={reference}>
+          {#each Object.keys($tokensStore.Primitives.color) as colorId}
+            <option value={colorId}>{$tokensStore.Primitives.color[colorId].$extensions?.[EXTENSION_NAMESPACE]?.name || colorId}</option>
+          {/each}
+        </select>
+      {:else}
+        <input type="color" bind:value={editedToken.$value} placeholder="Value" class="cell" />
+      {/if}
+    {:else}
+      <input type="color" bind:value={editedToken.$value} placeholder="Value" class="cell" />
+    {/if}
+    
     <button on:click={handleSave} class="cell">Save</button>
     <button on:click={handleCancel} class="cell">Cancel</button>
   {:else}
@@ -134,8 +156,13 @@
     {/if}
     <p class="cell">{token.$description}</p>
     <div class="color">
-      <span class="color-swatch" style="background-color: {token.$value};"></span>
-      <p>{token.$value}</p>
+      {#if reference && !isPrimitive}
+        <span class="color-swatch" style="background-color: {$tokensStore.Primitives.color[reference]?.$value};"></span>
+        <p>Reference: {reference} (Value: {$tokensStore.Primitives.color[reference]?.$value})</p>
+      {:else}
+        <span class="color-swatch" style="background-color: {token.$value};"></span>
+        <p>{token.$value}</p>
+      {/if}
     </div>
     <button on:click={toggleEditMode} class="cell">Edit</button>
   {/if}

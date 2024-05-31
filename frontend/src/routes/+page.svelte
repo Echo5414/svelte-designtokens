@@ -78,14 +78,15 @@
     <input type="text" bind:value={newCollectionName} placeholder="New Collection Name" />
     <button on:click={handleAddCollection}>Add Collection</button>
 
-    <ul>
+    <select bind:value={selectedCollection}>
       {#each Object.keys(collections) as collection}
-        <li>
-          <button on:click={() => selectedCollection = collection}>{collection}</button>
-          <button on:click={() => handleDeleteCollection(collection)}>Delete</button>
-        </li>
+        <option value={collection}>{collection}</option>
       {/each}
-    </ul>
+    </select>
+
+    {#if selectedCollection}
+      <button on:click={() => selectedCollection && handleDeleteCollection(selectedCollection)}>Delete Current Collection</button>
+    {/if}
   </div>
 
   {#if selectedCollection}
@@ -98,10 +99,11 @@
       {#each Object.entries(collections[selectedCollection].color) as [id, token]}
         <div class="token-container">
           <ColorToken 
-            {id} 
-            {token} 
+            id={id} 
+            token={token} 
             currentlyEditingId={currentlyEditingColorId} 
-            setCurrentlyEditingId={(id) => setCurrentlyEditingId(id, 'color')} 
+            setCurrentlyEditingId={(id) => setCurrentlyEditingId(id, 'color')}
+            isPrimitive={selectedCollection === 'Primitives'}
             on:save={handleSaveToken} 
             on:delete={handleDeleteToken} 
           />
@@ -114,10 +116,10 @@
       {#each Object.entries(collections[selectedCollection].typography) as [id, token]}
         <div class="token-container">
           <TypographyToken 
-            {id} 
-            {token} 
+            id={id} 
+            token={token} 
             currentlyEditingId={currentlyEditingTypographyId} 
-            setCurrentlyEditingId={(id) => setCurrentlyEditingId(id, 'typography')} 
+            setCurrentlyEditingId={(id) => setCurrentlyEditingId(id, 'typography')}
             on:save={handleSaveToken} 
             on:delete={handleDeleteToken} 
           />
@@ -130,10 +132,10 @@
       {#each Object.entries(collections[selectedCollection].spacing) as [id, token]}
         <div class="token-container">
           <SpacingToken 
-            {id} 
-            {token} 
+            id={id} 
+            token={token} 
             currentlyEditingId={currentlyEditingSpacingId} 
-            setCurrentlyEditingId={(id) => setCurrentlyEditingId(id, 'spacing')} 
+            setCurrentlyEditingId={(id) => setCurrentlyEditingId(id, 'spacing')}
             on:save={handleSaveToken} 
             on:delete={handleDeleteToken} 
           />
@@ -141,7 +143,7 @@
       {/each}
     {/if}
   {/if}
-</main> 
+</main>
 
 <style>
   main {
@@ -151,5 +153,12 @@
     display: flex;
     align-items: center;
     margin-bottom: 1rem;
+  }
+  select {
+    margin-top: 1rem;
+    padding: 0.5rem;
+  }
+  button {
+    margin-left: 0.5rem;
   }
 </style>

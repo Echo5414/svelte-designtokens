@@ -7,6 +7,7 @@ export interface ColorToken {
   $extensions: {
     [key: string]: {
       name: string;
+      reference?: string; // Reference to another color token
     };
   } | null;
 }
