@@ -31,7 +31,7 @@ export function deleteCollection(name: string) {
 export function updateToken(collection: string, type: keyof Tokens, id: string, token: ColorToken | TypographyToken | SpacingToken) {
   tokensStore.update((collections) => {
     collections[collection][type][id] = token;
-    if (collection === 'Primitives' && type === 'color' && typeof token.$value === 'string') {
+    if (type === 'color' && typeof token.$value === 'string') {
       propagateChanges(type, id, token.$value);
     }
     return collections;
@@ -55,11 +55,13 @@ export function deleteToken(collection: string, type: keyof Tokens, id: string) 
 // Function to update system tokens when a primitive token changes
 function propagateChanges(type: keyof Tokens, id: string, value: string) {
   tokensStore.update((collections) => {
-    for (const [collectionName, collectionTokens] of Object.entries(collections)) {
-      if (collectionName !== 'Primitives') {
-        for (const token of Object.values(collectionTokens[type])) {
-          if (token.$extensions?.[EXTENSION_NAMESPACE]?.reference === id) {
-            token.$value = value;
+    for (const collectionTokens of Object.values(collections)) {
+      for (const tokenType in collectionTokens) {
+        if (tokenType === type) {
+          for (const token of Object.values(collectionTokens[tokenType])) {
+            if (token.$extensions?.[EXTENSION_NAMESPACE]?.reference === id) {
+              token.$value = value;
+            }
           }
         }
       }

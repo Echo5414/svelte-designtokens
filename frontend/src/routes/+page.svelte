@@ -23,7 +23,7 @@
         selectedCollection = Object.keys(collections)[0];
       }
     });
-    return unsubscribe;
+    return unsubscribe();
   });
 
   function handleAddCollection() {
@@ -103,7 +103,7 @@
             token={token} 
             currentlyEditingId={currentlyEditingColorId} 
             setCurrentlyEditingId={(id) => setCurrentlyEditingId(id, 'color')}
-            isPrimitive={selectedCollection === 'Primitives'}
+            isPrimitive={selectedCollection === 'PRIMITIVES'}
             on:save={handleSaveToken} 
             on:delete={handleDeleteToken} 
           />
@@ -116,7 +116,7 @@
       {#each Object.entries(collections[selectedCollection].typography) as [id, token]}
         <div class="token-container">
           <TypographyToken 
-            id={id} 
+            id={id}
             token={token} 
             currentlyEditingId={currentlyEditingTypographyId} 
             setCurrentlyEditingId={(id) => setCurrentlyEditingId(id, 'typography')}
@@ -132,7 +132,7 @@
       {#each Object.entries(collections[selectedCollection].spacing) as [id, token]}
         <div class="token-container">
           <SpacingToken 
-            id={id} 
+            id={id}
             token={token} 
             currentlyEditingId={currentlyEditingSpacingId} 
             setCurrentlyEditingId={(id) => setCurrentlyEditingId(id, 'spacing')}

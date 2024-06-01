@@ -2,6 +2,7 @@
   import { createEventDispatcher, onMount, onDestroy } from 'svelte';
   import { tokensStore } from '../stores/tokens';
   const EXTENSION_NAMESPACE = import.meta.env.VITE_EXTENSION_NAMESPACE;
+  
   export let id: string;
   export let token: {
     $type: 'color';
@@ -10,13 +11,13 @@
     $extensions: {
       [key: string]: {
         name: string;
-        reference?: string; // Reference to another color token
+        reference?: string;
       };
     } | null;
   };
   export let currentlyEditingId: string | null;
   export let setCurrentlyEditingId: (id: string | null) => void;
-  export let isPrimitive: boolean = false; // New prop to indicate if the token is a primitive
+  export let isPrimitive: boolean = false;
 
   let editMode = false;
   let editedToken = { ...token };
@@ -127,8 +128,14 @@
 
       {#if reference}
         <select bind:value={reference}>
-          {#each Object.keys($tokensStore.Primitives.color) as colorId}
-            <option value={colorId}>{$tokensStore.Primitives.color[colorId].$extensions?.[EXTENSION_NAMESPACE]?.name || colorId}</option>
+          {#each Object.keys($tokensStore).flatMap(collection => Object.keys($tokensStore[collection]?.color || {})) as colorId}
+            <option value={colorId}>
+              {
+                $tokensStore[
+                  Object.keys($tokensStore).find(collection => collection && $tokensStore[collection]?.color?.[colorId]) ?? ''
+                ]?.color?.[colorId]?.$extensions?.[EXTENSION_NAMESPACE]?.name || colorId
+              }
+            </option>
           {/each}
         </select>
       {:else}
@@ -157,8 +164,13 @@
     <p class="cell">{token.$description}</p>
     <div class="color">
       {#if reference && !isPrimitive}
-        <span class="color-swatch" style="background-color: {$tokensStore.Primitives.color[reference]?.$value};"></span>
-        <p>Reference: {reference} (Value: {$tokensStore.Primitives.color[reference]?.$value})</p>
+        {#if reference && Object.keys($tokensStore).some(collection => $tokensStore[collection]?.color?.[reference])}
+          <p>Reference: {reference} (Value: {
+            $tokensStore[
+              Object.keys($tokensStore).find(collection => collection && $tokensStore[collection]?.color?.[reference]) ?? ''
+            ]?.color?.[reference]?.$value
+          })</p>
+        {/if}
       {:else}
         <span class="color-swatch" style="background-color: {token.$value};"></span>
         <p>{token.$value}</p>
@@ -182,7 +194,6 @@
     align-items: center;
   }
   .cell {
-    padding: 8px;
   }
   .editable-name {
     cursor: pointer;

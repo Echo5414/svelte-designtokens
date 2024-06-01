@@ -1,31 +1,61 @@
 {
-  "Primitives": {
+  "PRIMITIVES": {
     "color": {
-      "0": {
+      "a3f4b23c-6fd1-4e29-8c29-3d8b4e3f4a9c": {
         "$type": "color",
-        "$description": "Primary color of the application",
-        "$value": "#ff5733",
+        "$description": "Primary Color of App",
+        "$value": "#459E59",
         "$extensions": {
           "com.username.myapp": {
-            "name": "primary color"
+            "name": "EMERALD"
           }
         }
       },
-      "1": {
+      "7d2a3b4c-1d5e-4b6c-8e1f-3f2e1a4d6b7c": {
         "$type": "color",
-        "$description": "Secondary color of the application",
-        "$value": "#33c4ff",
+        "$description": "Secondary Color of App",
+        "$value": "#8C47E3",
         "$extensions": {
           "com.username.myapp": {
-            "name": "secondary color"
+            "name": "PANDORA"
+          }
+        }
+      },
+      "5a699b70-9fdc-4b2f-a2d3-9fa2fafa28f4": {
+        "$type": "color",
+        "$description": "Neutral Color Light",
+        "$value": "#E6EAF2",
+        "$extensions": {
+          "com.username.myapp": {
+            "name": "NEUTRAL100"
+          }
+        }
+      },
+      "c38be139-aecd-44d1-8b9a-e3105738b031": {
+        "$type": "color",
+        "$description": "Neutral Color Medium",
+        "$value": "#85878C",
+        "$extensions": {
+          "com.username.myapp": {
+            "name": "NEUTRAL500"
+          }
+        }
+      },
+      "2d7e1a4c-3f6b-9c5d-8b2a-1e4c7a3d5f6b": {
+        "$type": "color",
+        "$description": "Neutral Color Dark",
+        "$value": "#18191A",
+        "$extensions": {
+          "com.username.myapp": {
+            "name": "NEUTRAL1000"
           }
         }
       }
     },
     "typography": {
-      "0": {
+      "1e9c3f5a-2d4b-6a7f-8d1e-9b6c5f4a7e2d": {
         "$type": "typography",
-        "$description": "Heading typography style",
+        "$description": "Heading H1",
         "$value": {
           "font-family": "Arial, sans-serif",
           "font-size": "32px",
@@ -35,60 +65,92 @@
         },
         "$extensions": {
           "com.username.myapp": {
-            "name": "Heading H1"
+            "name": "H1"
           }
         }
       }
     },
     "spacing": {
-      "0": {
+      "3d7a2b1c-8f4e-1a2d-6b5c-7e8d9f3a2b6c": {
         "$type": "spacing",
         "$description": "Small spacing",
         "$value": "8px",
         "$extensions": {
           "com.username.myapp": {
-            "name": "spacing-s"
+            "name": "SPACING100"
           }
         }
       },
-      "1": {
+      "5b4d7e1a-6f2c-3a8d-9e4b-2f1c7a9d6e5b": {
         "$type": "spacing",
         "$description": "Medium spacing",
         "$value": "16px",
         "$extensions": {
           "com.username.myapp": {
-            "name": "spacing-m"
+            "name": "SPACING500"
           }
         }
       },
-      "2": {
+      "6a9c2f3d-1e4b-8d7f-5c2a-4e1b3f6d8a7c": {
         "$type": "spacing",
         "$description": "Large spacing",
         "$value": "32px",
         "$extensions": {
           "com.username.myapp": {
-            "name": "spacing-xl"
+            "name": "SPACING1000"
           }
         }
       }
     }
   },
-  "System Tokens": {
+  "System": {
     "color": {
-      "0": {
+      "8d1f3b6c-2a7e-4b9c-5d1e-6a3c7f4b9d2e": {
         "$type": "color",
-        "$description": "Primary color of the application",
-        "$value": "#ff5733",
+        "$description": "Primary500 Color Description",
+        "$value": "#459E59",
         "$extensions": {
           "com.username.myapp": {
-            "name": "xxl color"
+            "name": "primary500",
+            "reference": "a3f4b23c-6fd1-4e29-8c29-3d8b4e3f4a9c"
+          }
+        }
+      },
+      "fa3b8343-5a30-45a4-82f6-7e649bac930d": {
+        "$type": "color",
+        "$description": "Secondary500 Color Description",
+        "$value": "#8C47E3",
+        "$extensions": {
+          "com.username.myapp": {
+            "name": "secondary500"
+          }
+        }
+      },
+      "f2ee7d68-8552-41b6-a239-ca9bd58b8349": {
+        "$type": "color",
+        "$description": "Neutral Color Description",
+        "$value": "#85878C",
+        "$extensions": {
+          "com.username.myapp": {
+            "name": "neutral500",
+            "reference": "c38be139-aecd-44d1-8b9a-e3105738b031"
           }
         }
       }
     },
-    "typography": {
-    },
+    "typography": {},
     "spacing": {
+      "babc5087-aab0-4c13-bf84-06e7798c5d20": {
+        "$type": "spacing",
+        "$description": "Spacing Description",
+        "$value": "8px",
+        "$extensions": {
+          "com.username.myapp": {
+            "name": "spacing100",
+            "reference": "3d7a2b1c-8f4e-1a2d-6b5c-7e8d9f3a2b6c"
+          }
+        }
+      }
     }
   }
 }
