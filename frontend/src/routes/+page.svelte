@@ -82,7 +82,7 @@
     <TokenForm on:add={(event) => handleAddToken(event.detail)} />
 
     <h3>Colors</h3>
-    {#if collections[selectedCollection].color}
+    {#if collections[selectedCollection]?.color}
       {#each Object.entries(collections[selectedCollection].color) as [id, token]}
         <div class="token-container">
           <ColorToken 
@@ -96,7 +96,7 @@
     {/if}
 
     <h3>Typography</h3>
-    {#if collections[selectedCollection].typography}
+    {#if collections[selectedCollection]?.typography}
       {#each Object.entries(collections[selectedCollection].typography) as [id, token]}
         <div class="token-container">
           <TypographyToken 
@@ -110,7 +110,7 @@
     {/if}
 
     <h3>Spacing</h3>
-    {#if collections[selectedCollection].spacing}
+    {#if collections[selectedCollection]?.spacing}
       {#each Object.entries(collections[selectedCollection].spacing) as [id, token]}
         <div class="token-container">
           <SpacingToken 

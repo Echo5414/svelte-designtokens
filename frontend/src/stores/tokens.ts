@@ -1,10 +1,10 @@
 import { writable } from 'svelte/store';
 import type { Tokens, ColorToken, TypographyToken, SpacingToken } from '../utils/localStorage';
-import { loadTokens, saveTokens } from '../utils/localStorage';
+import { saveTokens, initializeLocalStorage } from '../utils/localStorage';
 
 const isBrowser = typeof window !== 'undefined';
 
-const initialData: { [key: string]: Tokens } = isBrowser ? (loadTokens() || {}) : {};
+const initialData = isBrowser ? initializeLocalStorage() || {} : {};
 
 export const tokensStore = writable<{ [key: string]: Tokens }>(initialData);
 

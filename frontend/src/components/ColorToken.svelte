@@ -41,10 +41,12 @@
 
   function toggleEditMode() {
     editMode = !editMode;
-    if (!editMode) {
+    if (editMode) {
       editedToken = { ...token };
-      description = token.$description ?? '';
-      extensionName = token.$extensions?.[EXTENSION_NAMESPACE]?.name ?? '';
+      description = editedToken.$description ?? '';
+      extensionName = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.name ?? '';
+    } else {
+      editedToken = { ...token };
     }
   }
 
