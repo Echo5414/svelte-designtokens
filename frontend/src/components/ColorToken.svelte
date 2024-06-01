@@ -38,6 +38,8 @@
 
   let description = token.$description ?? '';
   let extensionName = token.$extensions?.[EXTENSION_NAMESPACE]?.name ?? '';
+  let reference = token.$extensions?.[EXTENSION_NAMESPACE]?.reference ?? '';
+  let isReference = !!reference;
 
   function toggleEditMode() {
     editMode = !editMode;
@@ -45,6 +47,8 @@
       editedToken = { ...token };
       description = editedToken.$description ?? '';
       extensionName = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.name ?? '';
+      reference = editedToken.$extensions?.[EXTENSION_NAMESPACE]?.reference ?? '';
+      isReference = !!reference;
     } else {
       editedToken = { ...token };
     }
@@ -52,13 +56,29 @@
 
   function handleSave() {
     editedToken.$description = description;
-    if (editedToken.$extensions) {
+    if (!editedToken.$extensions) {
+      editedToken.$extensions = { [EXTENSION_NAMESPACE]: { name: extensionName, reference: isReference ? reference : undefined } };
+    } else {
       if (!editedToken.$extensions[EXTENSION_NAMESPACE]) {
-        editedToken.$extensions[EXTENSION_NAMESPACE] = { name: '' };
+        editedToken.$extensions[EXTENSION_NAMESPACE] = { name: extensionName };
       }
       editedToken.$extensions[EXTENSION_NAMESPACE]!.name = extensionName;
-    } else {
-      editedToken.$extensions = { [EXTENSION_NAMESPACE]: { name: extensionName } };
+      if (!isReference) {
+        editedToken.$extensions[EXTENSION_NAMESPACE]!.reference = undefined;
+        editedToken.$value = editedToken.$value;
+      } else {
+        editedToken.$extensions[EXTENSION_NAMESPACE]!.reference = reference;
+        const store = get(tokensStore) as { [key: string]: Tokens };
+        const referenceId = reference;
+        if (referenceId) {
+          for (const collection of Object.values(store)) {
+            if (collection.color[referenceId]) {
+              editedToken.$value = collection.color[referenceId].$value;
+              break;
+            }
+          }
+        }
+      }
     }
 
     dispatch('save', { id, token: editedToken, type: 'color' });
@@ -74,7 +94,30 @@
   {#if editMode}
     <input type="text" bind:value={extensionName} placeholder="Name" class="cell" />
     <input type="text" bind:value={description} placeholder="Description" class="cell" />
-    <input type="color" bind:value={editedToken.$value} class="cell" />
+    <div>
+      <label>
+        <input type="radio" bind:group={isReference} value={false} /> Pick Color
+      </label>
+      <label>
+        <input type="radio" bind:group={isReference} value={true} /> Reference Color
+      </label>
+    </div>
+    {#if isReference}
+      <select bind:value={reference}>
+        <option value={''}>Select reference</option>
+        {#each Object.entries($tokensStore).flatMap(([collectionName, collectionTokens]) => 
+          Object.entries(collectionTokens.color).map(([colorId, colorToken]) => ({
+            collectionName,
+            colorId,
+            colorToken
+          }))
+        ) as color}
+          <option value={color.colorId}>{color.colorToken.$extensions?.[EXTENSION_NAMESPACE]?.name}</option>
+        {/each}
+      </select>
+    {:else}
+      <input type="color" bind:value={editedToken.$value} class="cell" />
+    {/if}
     <button on:click={handleSave} class="cell">Save</button>
     <button on:click={toggleEditMode} class="cell">Cancel</button>
   {:else}
@@ -82,7 +125,7 @@
     <p class="cell">{token.$description}</p>
     <div class="color">
       {#if referenceTokenValue}
-        Reference: {token.$extensions?.[EXTENSION_NAMESPACE]?.reference} (Value: {referenceTokenValue})
+        <p>Reference: {token.$extensions?.[EXTENSION_NAMESPACE]?.reference} (Value: {referenceTokenValue})</p>
       {:else}
         <span class="color-swatch" style="background-color: {token.$value};"></span>
         <p>{token.$value}</p>
