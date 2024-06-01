@@ -32,17 +32,15 @@ export function updateToken(collection: string, type: keyof Tokens, id: string, 
   tokensStore.update((collections) => {
     collections[collection][type][id] = token;
 
-    // Check for tokens referencing this token if it's a color token
-    if (type === 'color') {
-      const colorToken = token as ColorToken;
-      Object.values(collections).forEach((col) => {
-        Object.entries(col.color).forEach(([key, tkn]) => {
+    Object.values(collections).forEach((col) => {
+      Object.keys(col).forEach((tokenType) => {
+        Object.entries(col[tokenType as keyof Tokens]).forEach(([key, tkn]) => {
           if (tkn.$extensions?.[import.meta.env.VITE_EXTENSION_NAMESPACE]?.reference === id) {
-            col.color[key].$value = colorToken.$value;
+            col[tokenType as keyof Tokens][key].$value = token.$value;
           }
         });
       });
-    }
+    });
 
     return collections;
   });
@@ -60,16 +58,15 @@ export function deleteToken(collection: string, type: keyof Tokens, id: string) 
     if (collections[collection] && collections[collection][type] && collections[collection][type][id]) {
       delete collections[collection][type][id];
 
-      // Check for tokens referencing this token and remove reference
-      if (type === 'color') {
-        Object.values(collections).forEach((col) => {
-          Object.entries(col.color).forEach(([key, tkn]) => {
+      Object.values(collections).forEach((col) => {
+        Object.keys(col).forEach((tokenType) => {
+          Object.entries(col[tokenType as keyof Tokens]).forEach(([key, tkn]) => {
             if (tkn.$extensions?.[import.meta.env.VITE_EXTENSION_NAMESPACE]?.reference === id) {
-              col.color[key].$extensions![import.meta.env.VITE_EXTENSION_NAMESPACE]!.reference = undefined;
+              col[tokenType as keyof Tokens][key].$extensions![import.meta.env.VITE_EXTENSION_NAMESPACE]!.reference = undefined;
             }
           });
         });
-      }
+      });
     }
     return collections;
   });
