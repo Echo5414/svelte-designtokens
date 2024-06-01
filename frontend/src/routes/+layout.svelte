@@ -1,16 +1,21 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { initializeLocalStorage } from '../utils/localStorage';
+  import { tokensStore } from '../stores/tokens';
+  import { updateCssVariables } from '../utils/styleUpdater';
 
   onMount(() => {
-    initializeLocalStorage();
+    const unsubscribe = tokensStore.subscribe((tokens) => {
+      updateCssVariables(tokens);
+    });
+
+    return () => unsubscribe();
   });
 </script>
 
 <slot />
 
 <style>
-  :global(:root) {
-    --primary-color: #22ff00; /* Default value */
+  :global(body) {
+    background-color: var(--System-color-primary500);
   }
 </style>

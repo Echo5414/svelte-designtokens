@@ -60,15 +60,11 @@ export function saveTokens(tokens: { [key: string]: Tokens }): void {
   }
 }
 
-export function initializeLocalStorage(): { [key: string]: Tokens } | null {
+export function initializeLocalStorage(): void {
   if (typeof window !== 'undefined' && window.localStorage) {
     const existingTokens = loadTokens();
-    if (!existingTokens) {
-      const tokens = sampleTokens as { [key: string]: Tokens };
-      saveTokens(tokens);
-      return tokens;
+    if (!existingTokens || Object.keys(existingTokens).length === 0) {
+      saveTokens(sampleTokens as unknown as { [key: string]: Tokens });
     }
-    return existingTokens;
   }
-  return null;
 }
