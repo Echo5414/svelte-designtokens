@@ -3,7 +3,6 @@
   import { initializeLocalStorage } from '../utils/localStorage';
 
   onMount(() => {
-    console.log('Calling initializeLocalStorage'); // Add this line
     initializeLocalStorage();
   });
 </script>

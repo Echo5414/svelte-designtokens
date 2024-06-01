@@ -79,7 +79,7 @@
 
   function addToken() {
     if (newToken.$extensions) {
-      newToken.$extensions[EXTENSION_NAMESPACE].name = name;
+      newToken.$extensions[EXTENSION_NAMESPACE]!.name = name;
     }
     if (newToken.$type === 'color') {
       newToken.$value = colorValue;

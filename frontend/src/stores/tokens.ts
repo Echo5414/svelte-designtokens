@@ -1,10 +1,8 @@
 import { writable } from 'svelte/store';
 import type { Tokens, ColorToken, TypographyToken, SpacingToken } from '../utils/localStorage';
-import { loadTokens, saveTokens, initializeLocalStorage } from '../utils/localStorage';
+import { loadTokens, saveTokens } from '../utils/localStorage';
 
 const isBrowser = typeof window !== 'undefined';
-
-initializeLocalStorage();
 
 const initialData: { [key: string]: Tokens } = isBrowser ? (loadTokens() || {}) : {};
 
@@ -46,7 +44,9 @@ export function addToken(collection: string, type: keyof Tokens, id: string, tok
 
 export function deleteToken(collection: string, type: keyof Tokens, id: string) {
   tokensStore.update((collections) => {
-    delete collections[collection][type][id];
+    if (collections[collection] && collections[collection][type] && collections[collection][type][id]) {
+      delete collections[collection][type][id];
+    }
     return collections;
   });
 }
