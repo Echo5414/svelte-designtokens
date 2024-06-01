@@ -1,10 +1,10 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { tokensStore, addCollection, deleteCollection, updateToken, addToken, deleteToken } from '../stores/tokens';
   import ColorToken from '../components/ColorToken.svelte';
   import TypographyToken from '../components/TypographyToken.svelte';
   import SpacingToken from '../components/SpacingToken.svelte';
   import TokenForm from '../components/TokenForm.svelte';
-  import { onMount } from 'svelte';
   import type { Tokens, ColorToken as ColorTokenType, TypographyToken as TypographyTokenType, SpacingToken as SpacingTokenType } from '../utils/localStorage';
 
   const EXTENSION_NAMESPACE = import.meta.env.VITE_EXTENSION_NAMESPACE;
@@ -23,7 +23,7 @@
         selectedCollection = Object.keys(collections)[0];
       }
     });
-    return unsubscribe();
+    return () => unsubscribe();
   });
 
   function handleAddCollection() {
@@ -143,6 +143,8 @@
       {/each}
     {/if}
   {/if}
+  
+  <slot></slot>
 </main>
 
 <style>

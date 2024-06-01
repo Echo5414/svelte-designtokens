@@ -1,8 +1,10 @@
 <script lang="ts">
   import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+  import { get } from 'svelte/store';
   import { tokensStore } from '../stores/tokens';
+  import type { Tokens } from '../utils/localStorage';
   const EXTENSION_NAMESPACE = import.meta.env.VITE_EXTENSION_NAMESPACE;
-  
+
   export let id: string;
   export let token: {
     $type: 'color';
@@ -26,6 +28,23 @@
   const dispatch = createEventDispatcher();
   let nameInputElement: HTMLInputElement | null = null;
   let isFocusing = false;
+
+  let displayValue = token.$value;
+
+  function initializeDisplayValues() {
+    const store = get(tokensStore) as { [key: string]: Tokens };
+
+    if (reference) {
+      const referencedToken = store.PRIMITIVES.color[reference];
+      if (referencedToken) {
+        displayValue = referencedToken.$value;
+      }
+    } else {
+      displayValue = token.$value;
+    }
+  }
+
+  $: initializeDisplayValues();
 
   function toggleEditMode() {
     editMode = !editMode;
@@ -115,41 +134,38 @@
   {#if editMode}
     <input type="text" bind:value={extensionName} placeholder="Name" class="cell" />
     <input type="text" bind:value={editedToken.$description} placeholder="Description" class="cell" />
-    
+
     {#if !isPrimitive}
       <div>
         <label>
-          <input type="radio" bind:group={reference} value={''} /> Pick Color
+          <input type="radio" bind:group={reference} value={''} checked={!reference} /> Pick Color
         </label>
         <label>
-          <input type="radio" bind:group={reference} value={'reference'} /> Reference Color
+          <input type="radio" bind:group={reference} value={'reference'} checked={!!reference} /> Reference Color
         </label>
       </div>
 
       {#if reference}
         <select bind:value={reference}>
-          {#each Object.keys($tokensStore).flatMap(collection => Object.keys($tokensStore[collection]?.color || {})) as colorId}
-            <option value={colorId}>
-              {
-                $tokensStore[
-                  Object.keys($tokensStore).find(collection => collection && $tokensStore[collection]?.color?.[colorId]) ?? ''
-                ]?.color?.[colorId]?.$extensions?.[EXTENSION_NAMESPACE]?.name || colorId
-              }
-            </option>
+          {#each Object.entries($tokensStore).flatMap(([collectionName, collectionTokens]) => 
+            Object.entries(collectionTokens.color).map(([colorId, colorToken]) => ({
+              collectionName,
+              colorId,
+              colorToken
+            }))
+          ) as color}
+            <option value={color.colorId}>{color.colorToken.$extensions?.[EXTENSION_NAMESPACE]?.name}</option>
           {/each}
         </select>
-      {:else}
-        <input type="color" bind:value={editedToken.$value} placeholder="Value" class="cell" />
       {/if}
-    {:else}
-      <input type="color" bind:value={editedToken.$value} placeholder="Value" class="cell" />
     {/if}
-    
+
+    <input type="color" bind:value={editedToken.$value} placeholder="Value" class="cell" />
     <button on:click={handleSave} class="cell">Save</button>
     <button on:click={handleCancel} class="cell">Cancel</button>
   {:else}
     {#if currentlyEditingId === id}
-      <input type="text" bind:value={extensionName} on:focus={handleFocus} on:blur={handleNameBlur} on:focusout={handleFocusOut} on:keydown={handleKeyDown} class="cell" bind:this={nameInputElement} />
+      <input type="text" bind:value={extensionName} on:blur={handleNameBlur} on:keydown={handleKeyDown} class="cell" bind:this={nameInputElement} />
     {:else}
       <div
         class="cell editable-name"
@@ -158,24 +174,18 @@
         on:dblclick={handleNameDoubleClick}
         on:keydown={(e) => e.key === 'Enter' && handleNameDoubleClick()}
       >
-        {token.$extensions?.[EXTENSION_NAMESPACE]?.name}
+        {extensionName}
       </div>
     {/if}
     <p class="cell">{token.$description}</p>
     <div class="color">
       {#if reference && !isPrimitive}
-        {#if reference && Object.keys($tokensStore).some(collection => $tokensStore[collection]?.color?.[reference])}
-          <p>Reference: {reference} (Value: {
-            $tokensStore[
-              Object.keys($tokensStore).find(collection => collection && $tokensStore[collection]?.color?.[reference]) ?? ''
-            ]?.color?.[reference]?.$value
-          })</p>
-        {/if}
+        <p>Reference: {reference} (Value: {displayValue})</p>
       {:else}
         <span class="color-swatch" style="background-color: {token.$value};"></span>
         <p>{token.$value}</p>
       {/if}
-    </div>
+    </div> 
     <button on:click={toggleEditMode} class="cell">Edit</button>
   {/if}
   <button on:click={handleDelete} class="cell">Delete</button>
@@ -183,7 +193,7 @@
 
 <style>
   .list {
-    display: grid;
+    display: grid; 
     grid-template-columns: repeat(6, auto);
     width: 100%;
     background-color: rgb(208, 206, 206);
@@ -194,6 +204,7 @@
     align-items: center;
   }
   .cell {
+    padding: 8px;
   }
   .editable-name {
     cursor: pointer;

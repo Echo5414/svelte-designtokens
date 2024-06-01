@@ -122,7 +122,8 @@
         "$value": "#8C47E3",
         "$extensions": {
           "com.username.myapp": {
-            "name": "secondary500"
+            "name": "secondary500",
+            "reference": "7d2a3b4c-1d5e-4b6c-8e1f-3f2e1a4d6b7c"
           }
         }
       },

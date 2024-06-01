@@ -1,4 +1,7 @@
+import { writable } from 'svelte/store';
 import sampleTokens from '../lib/schemasSample.json';
+
+const STORAGE_KEY = import.meta.env.VITE_STORAGE_KEY || 'tokens';
 
 export interface ColorToken {
   $type: 'color';
@@ -7,7 +10,7 @@ export interface ColorToken {
   $extensions: {
     [key: string]: {
       name: string;
-      reference?: string; // Reference to another color token
+      reference?: string;
     };
   } | null;
 }
@@ -46,31 +49,35 @@ export interface Tokens {
   spacing: Record<string, SpacingToken>;
 }
 
-export interface Collection {
-  [name: string]: Tokens;
-}
+export const tokensStore = writable<{ [key: string]: Tokens }>({});
 
-export function loadTokens(): Collection | null {
+export function loadTokens(): { [key: string]: Tokens } | null {
   if (typeof window !== 'undefined' && window.localStorage) {
-    const data = localStorage.getItem(import.meta.env.VITE_STORAGE_KEY);
+    const data = localStorage.getItem(STORAGE_KEY);
+    console.log('Loaded tokens from local storage:', data); // Add this line
     return data ? JSON.parse(data) : null;
   }
   return null;
 }
 
-export function saveTokens(tokens: Collection): void {
+export function saveTokens(tokens: { [key: string]: Tokens }): void {
   if (typeof window !== 'undefined' && window.localStorage) {
-    localStorage.setItem(import.meta.env.VITE_STORAGE_KEY, JSON.stringify(tokens));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(tokens));
+    console.log('Saved tokens to local storage:', tokens); // Add this line
   }
 }
 
 export function initializeLocalStorage(): void {
   if (typeof window !== 'undefined' && window.localStorage) {
     const existingTokens = loadTokens();
-    if (!existingTokens) {
-      saveTokens(sampleTokens as unknown as Collection);
+    if (!existingTokens || Object.keys(existingTokens).length === 0) {
+      console.log('No existing tokens found, initializing with sample tokens'); // Add this line
+      console.log('Sample tokens:', sampleTokens); // Add this line
+      saveTokens(sampleTokens as unknown as { [key: string]: Tokens });
+      tokensStore.set(sampleTokens as unknown as { [key: string]: Tokens });
+    } else {
+      console.log('Existing tokens found, loading into store:', existingTokens); // Add this line
+      tokensStore.set(existingTokens);
     }
   }
 }
-
-initializeLocalStorage();
