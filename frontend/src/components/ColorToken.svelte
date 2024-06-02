@@ -12,6 +12,12 @@
   const dispatch = createEventDispatcher();
   let referenceTokenValue: string | null = null;
   let displayName: string | null = null;
+  let referencePath: string | null = null;
+
+  // Helper function to format the reference path
+  function formatReference(reference: string | undefined): string | undefined {
+    return reference?.replace(/\./g, '/');
+  }
 
   // Compute the display value, either the direct value or the reference value
   $: {
@@ -19,9 +25,10 @@
       const store = get(tokensStore) as { [key: string]: Tokens };
       const referenceId = token.$extensions[EXTENSION_NAMESPACE]?.reference;
       if (referenceId) {
-        for (const collection of Object.values(store)) {
+        for (const [collectionName, collection] of Object.entries(store)) {
           if (collection.color[referenceId]) {
             referenceTokenValue = collection.color[referenceId].$value;
+            referencePath = `${collectionName}/Color/${collection.color[referenceId].$extensions?.[EXTENSION_NAMESPACE]?.name}`;
             displayName = token.$extensions[EXTENSION_NAMESPACE]?.name ?? null;
             break;
           }
@@ -29,6 +36,7 @@
       }
     } else {
       referenceTokenValue = null;
+      referencePath = null;
       displayName = token.$extensions?.[EXTENSION_NAMESPACE]?.name ?? null;
     }
   }
@@ -125,7 +133,8 @@
     <p class="cell">{token.$description}</p>
     <div class="color">
       {#if referenceTokenValue}
-        <p>Reference: {token.$extensions?.[EXTENSION_NAMESPACE]?.reference} (Value: {referenceTokenValue})</p>
+        <span class="color-swatch" style="background-color: {token.$value};"></span>
+        <p>{referencePath}</p>
       {:else}
         <span class="color-swatch" style="background-color: {token.$value};"></span>
         <p>{token.$value}</p>

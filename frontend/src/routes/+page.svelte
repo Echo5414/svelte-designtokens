@@ -1,4 +1,5 @@
 <script lang="ts">
+  import TokenManager from '../components/TokenManager.svelte';
   import { tokensStore, addCollection, deleteCollection, updateToken, addToken, deleteToken } from '../stores/tokens';
   import ColorToken from '../components/ColorToken.svelte';
   import TypographyToken from '../components/TypographyToken.svelte';
@@ -77,6 +78,7 @@
   </div>
 
   {#if selectedCollection}
+    <TokenManager />
     <h2>Current Collection: {selectedCollection}</h2>
 
     <TokenForm on:add={(event) => handleAddToken(event.detail)} />
