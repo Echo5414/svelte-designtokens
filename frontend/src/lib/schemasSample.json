@@ -4,7 +4,7 @@
       "a3f4b23c-6fd1-4e29-8c29-3d8b4e3f4a9c": {
         "$type": "color",
         "$description": "Primary Color of App",
-        "$value": "#459E59",
+        "$value": "#55dd72",
         "$extensions": {
           "com.username.myapp": {
             "name": "EMERALD"
@@ -14,7 +14,7 @@
       "7d2a3b4c-1d5e-4b6c-8e1f-3f2e1a4d6b7c": {
         "$type": "color",
         "$description": "Secondary Color of App",
-        "$value": "#8C47E3",
+        "$value": "#9771c6",
         "$extensions": {
           "com.username.myapp": {
             "name": "PANDORA"
@@ -48,6 +48,26 @@
         "$extensions": {
           "com.username.myapp": {
             "name": "NEUTRAL1000"
+          }
+        }
+      },
+      "0dfa07f0-79a5-4a73-865d-a8954c8b88e3": {
+        "$type": "color",
+        "$description": "",
+        "$value": "#191919",
+        "$extensions": {
+          "com.username.myapp": {
+            "name": "APPBACKGROUND800"
+          }
+        }
+      },
+      "d587ab9e-f241-435c-8f1c-74c25f12315a": {
+        "$type": "color",
+        "$description": "",
+        "$value": "#2e2e2e",
+        "$extensions": {
+          "com.username.myapp": {
+            "name": "APPBACKGROUND600"
           }
         }
       }
@@ -103,12 +123,12 @@
       }
     }
   },
-  "System": {
+  "system": {
     "color": {
       "8d1f3b6c-2a7e-4b9c-5d1e-6a3c7f4b9d2e": {
         "$type": "color",
         "$description": "Primary500 Color Description",
-        "$value": "#459E59",
+        "$value": "#55dd72",
         "$extensions": {
           "com.username.myapp": {
             "name": "primary500",
@@ -119,7 +139,7 @@
       "fa3b8343-5a30-45a4-82f6-7e649bac930d": {
         "$type": "color",
         "$description": "Secondary500 Color Description",
-        "$value": "#8C47E3",
+        "$value": "#9771c6",
         "$extensions": {
           "com.username.myapp": {
             "name": "secondary500",
@@ -137,9 +157,60 @@
             "reference": "c38be139-aecd-44d1-8b9a-e3105738b031"
           }
         }
+      },
+      "16ff2043-8ab4-494c-a23a-44944827cd23": {
+        "$type": "color",
+        "$description": "new",
+        "$value": "#191919",
+        "$extensions": {
+          "com.username.myapp": {
+            "name": "appBackground",
+            "reference": "0dfa07f0-79a5-4a73-865d-a8954c8b88e3"
+          }
+        }
+      },
+      "5b35474d-fbeb-46db-b19d-a731efc29c85": {
+        "$type": "color",
+        "$description": "all texts",
+        "$value": "#e9e7e7",
+        "$extensions": {
+          "com.username.myapp": {
+            "name": "appText",
+            "reference": "5b35474d-fbeb-46db-b19d-a731efc29c85"
+          }
+        }
+      },
+      "975b0e84-95ee-484c-befc-c5cec1e2bc44": {
+        "$type": "color",
+        "$description": "",
+        "$value": "#2e2e2e",
+        "$extensions": {
+          "com.username.myapp": {
+            "name": "appListBackground",
+            "reference": "d587ab9e-f241-435c-8f1c-74c25f12315a"
+          }
+        }
       }
     },
-    "typography": {},
+    "typography": {
+      "ca247d93-1997-4d98-9e68-28ab4e5f9924": {
+        "$type": "typography",
+        "$description": "new h1 desc",
+        "$value": {
+          "font-family": "Arial, sans-serif",
+          "font-size": "32px",
+          "font-weight": 700,
+          "line-height": "40px",
+          "letter-spacing": "0.1px"
+        },
+        "$extensions": {
+          "com.username.myapp": {
+            "name": "textHeadline1",
+            "reference": "1e9c3f5a-2d4b-6a7f-8d1e-9b6c5f4a7e2d"
+          }
+        }
+      }
+    },
     "spacing": {
       "babc5087-aab0-4c13-bf84-06e7798c5d20": {
         "$type": "spacing",

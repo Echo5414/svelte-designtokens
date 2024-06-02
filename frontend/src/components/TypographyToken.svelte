@@ -12,6 +12,12 @@
   const dispatch = createEventDispatcher();
   let referenceTokenValue: TypographyTokenType['$value'] | null = null;
   let displayName: string | null = null;
+  let referencePath: string | null = null;
+
+  // Helper function to format the reference path
+  function formatReference(reference: string | undefined): string | undefined {
+    return reference?.replace(/\./g, '/');
+  }
 
   // Compute the display value, either the direct value or the reference value
   $: {
@@ -19,16 +25,20 @@
       const store = get(tokensStore) as { [key: string]: Tokens };
       const referenceId = token.$extensions[EXTENSION_NAMESPACE]?.reference;
       if (referenceId) {
-        for (const collection of Object.values(store)) {
-          if (collection.typography[referenceId]) {
-            referenceTokenValue = collection.typography[referenceId].$value;
-            displayName = token.$extensions[EXTENSION_NAMESPACE]?.name ?? null;
-            break;
+        for (const [collectionName, collection] of Object.entries(store)) {
+          for (const [type, tokens] of Object.entries(collection)) {
+            if (tokens[referenceId]) {
+              referenceTokenValue = tokens[referenceId].$value;
+              referencePath = `${collectionName}/${type}/${tokens[referenceId].$extensions?.[EXTENSION_NAMESPACE]?.name}`;
+              displayName = token.$extensions[EXTENSION_NAMESPACE]?.name ?? null;
+              break;
+            }
           }
         }
       }
     } else {
       referenceTokenValue = null;
+      referencePath = null;
       displayName = token.$extensions?.[EXTENSION_NAMESPACE]?.name ?? null;
     }
   }
@@ -71,9 +81,11 @@
         const referenceId = reference;
         if (referenceId) {
           for (const collection of Object.values(store)) {
-            if (collection.typography[referenceId]) {
-              editedToken.$value = collection.typography[referenceId].$value;
-              break;
+            for (const tokens of Object.values(collection)) {
+              if (tokens[referenceId]) {
+                editedToken.$value = tokens[referenceId].$value;
+                break;
+              }
             }
           }
         }
@@ -128,12 +140,12 @@
     <p class="cell">{token.$description}</p>
     <div class="values">
       {#if referenceTokenValue}
-        <p>Reference: {token.$extensions?.[EXTENSION_NAMESPACE]?.reference}</p>
-        <p>{referenceTokenValue['font-family']}</p>
-        <p>{referenceTokenValue['font-size']}</p>
-        <p>{referenceTokenValue['font-weight']}</p>
-        <p>{referenceTokenValue['line-height']}</p>
-        <p>{referenceTokenValue['letter-spacing']}</p>
+        <p>{referencePath}</p>
+        <p>{token.$value['font-family']}</p>
+        <p>{token.$value['font-size']}</p>
+        <p>{token.$value['font-weight']}</p>
+        <p>{token.$value['line-height']}</p>
+        <p>{token.$value['letter-spacing']}</p>
       {:else}
         <p>{token.$value['font-family']}</p>
         <p>{token.$value['font-size']}</p>

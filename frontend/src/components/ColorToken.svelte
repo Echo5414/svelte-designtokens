@@ -26,11 +26,13 @@
       const referenceId = token.$extensions[EXTENSION_NAMESPACE]?.reference;
       if (referenceId) {
         for (const [collectionName, collection] of Object.entries(store)) {
-          if (collection.color[referenceId]) {
-            referenceTokenValue = collection.color[referenceId].$value;
-            referencePath = `${collectionName}/Color/${collection.color[referenceId].$extensions?.[EXTENSION_NAMESPACE]?.name}`;
-            displayName = token.$extensions[EXTENSION_NAMESPACE]?.name ?? null;
-            break;
+          for (const [type, tokens] of Object.entries(collection)) {
+            if (tokens[referenceId]) {
+              referenceTokenValue = tokens[referenceId].$value;
+              referencePath = `${collectionName}/${type}/${tokens[referenceId].$extensions?.[EXTENSION_NAMESPACE]?.name}`;
+              displayName = token.$extensions[EXTENSION_NAMESPACE]?.name ?? null;
+              break;
+            }
           }
         }
       }
@@ -80,9 +82,11 @@
         const referenceId = reference;
         if (referenceId) {
           for (const collection of Object.values(store)) {
-            if (collection.color[referenceId]) {
-              editedToken.$value = collection.color[referenceId].$value;
-              break;
+            for (const tokens of Object.values(collection)) {
+              if (tokens[referenceId]) {
+                editedToken.$value = tokens[referenceId].$value;
+                break;
+              }
             }
           }
         }
