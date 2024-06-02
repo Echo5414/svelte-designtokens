@@ -2,6 +2,7 @@
   import { onMount } from 'svelte';
   import { tokensStore } from '../stores/tokens';
   import { updateCssVariables } from '../utils/styleUpdater';
+  import '../global.scss';
 
   onMount(() => {
     const unsubscribe = tokensStore.subscribe((tokens) => {
@@ -13,9 +14,3 @@
 </script>
 
 <slot />
-
-<style>
-  :global(body) {
-    background-color: var(--System-color-bodyBackground);
-  }
-</style>

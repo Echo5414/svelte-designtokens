@@ -144,30 +144,3 @@
   {/if}
   <button on:click={handleDelete} class="cell">Delete</button>
 </div>
-
-<style>
-  .list {
-    display: grid;
-    grid-template-columns: repeat(6, auto);
-    width: 100%;
-    background-color: rgb(208, 206, 206);
-    align-items: center;
-  }
-  .color {
-    display: flex;
-    align-items: center;
-  }
-  .cell {
-    padding: 8px;
-  }
-  .color-swatch {
-    display: inline-block;
-    width: 24px;
-    height: 24px;
-    border-radius: 2px;
-  }
-  button {
-    height: 100%;
-    width: auto;
-  }
-</style>

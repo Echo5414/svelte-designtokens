@@ -1,0 +1,142 @@
+// Reset
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline: 0 !important;
+  border: 0;
+}
+
+html {
+  line-height: 120%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body, button, input, optgroup, select, textarea {
+  font-family: inherit;
+  font-size: 100%;
+}
+
+ul, ol {
+  list-style: none;
+}
+
+hr {
+  box-sizing: content-box;
+  height: 0;
+  overflow: visible;
+}
+
+pre {
+  font-family: monospace, monospace;
+  font-size: 1em;
+}
+
+a {
+  background-color: transparent;
+  text-decoration: none;
+}
+
+a:active, a:hover {
+  outline-width: 0;
+}
+
+abbr[title] {
+  border-bottom: none;
+  text-decoration: underline;
+  text-decoration: underline dotted;
+}
+
+b, strong {
+  font-weight: bolder;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+  height: auto;
+}
+
+svg:not(:root) {
+  overflow: hidden;
+}
+
+button, input {
+  overflow: visible;
+}
+
+button, select {
+  text-transform: none;
+}
+
+button, [type="button"], [type="reset"], [type="submit"] {
+  -webkit-appearance: button;
+}
+
+fieldset {
+  padding: 0.35em 0.75em 0.625em;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* ::before, ::after {
+  content: ''; // makes problems
+  display: table;
+} */
+
+a:focus, button:focus {
+  /* your custom focus style here if needed */
+}
+
+
+//
+
+
+body {
+  background-color: var(--System-color-bodyBackground);
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(6, auto);
+  width: 100%;
+  background-color: rgb(208, 206, 206);
+  align-items: center;
+}
+
+.color {
+  display: flex;
+  align-items: center;
+}
+
+.cell {
+  padding: 8px;
+}
+
+.color-swatch {
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  border-radius: 2px;
+}
+
+button {
+  height: 100%;
+  width: auto;
+}
+.token-container {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+select {
+  margin-top: 1rem;
+  padding: 0.5rem;
+}
+button {
+  margin-left: 0.5rem;
+}

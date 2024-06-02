@@ -126,21 +126,3 @@
     {/if}
   {/if}
 </main>
-
-<style>
-  main {
-    background-color: var(--primary-color);
-  }
-  .token-container {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-  select {
-    margin-top: 1rem;
-    padding: 0.5rem;
-  }
-  button {
-    margin-left: 0.5rem;
-  }
-</style>
