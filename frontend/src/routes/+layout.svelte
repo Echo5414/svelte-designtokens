@@ -16,6 +16,6 @@
 
 <style>
   :global(body) {
-    background-color: var(--System-color-primary500);
+    background-color: var(--System-color-bodyBackground);
   }
 </style>
