@@ -106,43 +106,49 @@
   {#if editMode}
     <input type="text" bind:value={extensionName} placeholder="Name" class="cell" />
     <input type="text" bind:value={description} placeholder="Description" class="cell" />
-    <div>
+    <div class="cell">
       <label>
         <input type="radio" bind:group={isReference} value={false} /> Pick Value
       </label>
       <label>
         <input type="radio" bind:group={isReference} value={true} /> Reference Value
       </label>
+      {#if isReference}
+        <select bind:value={reference}>
+          <option value={''}>Select reference</option>
+          {#each Object.entries($tokensStore).flatMap(([collectionName, collectionTokens]) => 
+            Object.entries(collectionTokens.spacing).map(([spacingId, spacingToken]) => ({
+              collectionName,
+              spacingId,
+              spacingToken
+            }))
+          ) as spacing}
+            <option value={spacing.spacingId}>{spacing.spacingToken.$extensions?.[EXTENSION_NAMESPACE]?.name}</option>
+          {/each}
+        </select>
+      {:else}
+        <input type="text" bind:value={editedToken.$value} placeholder="Value" class="cell" />
+      {/if}
     </div>
-    {#if isReference}
-      <select bind:value={reference}>
-        <option value={''}>Select reference</option>
-        {#each Object.entries($tokensStore).flatMap(([collectionName, collectionTokens]) => 
-          Object.entries(collectionTokens.spacing).map(([spacingId, spacingToken]) => ({
-            collectionName,
-            spacingId,
-            spacingToken
-          }))
-        ) as spacing}
-          <option value={spacing.spacingId}>{spacing.spacingToken.$extensions?.[EXTENSION_NAMESPACE]?.name}</option>
-        {/each}
-      </select>
-    {:else}
-      <input type="text" bind:value={editedToken.$value} placeholder="Value" class="cell" />
-    {/if}
-    <button on:click={handleSave} class="cell">Save</button>
-    <button on:click={toggleEditMode} class="cell">Cancel</button>
+    <div class="button-container">
+      <button on:click={handleSave} class="cell">Save</button>
+      <button on:click={toggleEditMode} class="cell">Cancel</button>
+      <button on:click={handleDelete} class="cell">Delete</button>
+    </div>
   {:else}
     <div class="cell">{displayName}</div>
     <p class="cell">{token.$description}</p>
     <div class="value">
       {#if referenceTokenValue}
-        <p>{referencePath} {token.$value}</p>
+        <p><span class="ellipsis">{referencePath}</span> {token.$value}</p>
       {:else}
         <p>{token.$value}</p>
       {/if}
     </div>
-    <button on:click={toggleEditMode} class="cell">Edit</button>
+    <div class="button-container">
+      <button on:click={toggleEditMode} class="cell">Edit</button>
+      <button on:click={handleDelete} class="cell">Delete</button>
+    </div>
   {/if}
-  <button on:click={handleDelete} class="cell">Delete</button>
 </div>
+

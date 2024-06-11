@@ -11,8 +11,11 @@
   let collections: { [key: string]: Tokens } = {};
   let selectedCollection: string | null = null;
   let newCollectionName = '';
+  let theme = "dark";
 
   onMount(() => {
+    console.log('Current theme:', document.body.getAttribute('data-theme'));
+    document.documentElement.setAttribute('data-theme', theme);
     const unsubscribe = tokensStore.subscribe((value) => {
       collections = value;
       if (!selectedCollection && Object.keys(collections).length > 0) {
@@ -56,15 +59,37 @@
       addToken(selectedCollection, type, id, token);
     }
   }
+
+  function setTheme(event: Event) {
+    const selectElement = event.target as HTMLSelectElement;
+    theme = selectElement.value;
+    document.documentElement.setAttribute('data-theme', theme);
+  }
 </script>
 
 <main>
   <h1>Design Tokens</h1>
 
+  <div class="theme-selector">
+    <label for="theme-select">Choose Theme:</label>
+    <div class="custom-select">
+      <select id="theme-select" on:change={setTheme} bind:value={theme}>
+        <option value="dark">Dark</option>
+        <option value="light">Light</option>
+      </select>
+      <app-icon class="arrow-icon">▾</app-icon>
+    </div>
+  </div>
+
+  <app-button variant="primary">
+
+  </app-button>
+
+  <!-- ENDE -->
   <div>
     <h2>Collections</h2>
     <input type="text" bind:value={newCollectionName} placeholder="New Collection Name" />
-    <button on:click={handleAddCollection}>Add Collection</button>
+    <button variant="primary" on:click={handleAddCollection}>Add Collection</button>
 
     <select bind:value={selectedCollection}>
       {#each Object.keys(collections) as collection}
@@ -84,6 +109,12 @@
     <TokenForm on:add={(event) => handleAddToken(event.detail)} />
 
     <h3>Colors</h3>
+    <div class="list">
+      <div class="header"><small>Name</small></div>
+      <div class="header"><small>Description</small></div>
+      <div class="header"><small>Color</small></div>
+      <div class="header"><small>Options</small></div>
+    </div>
     {#if collections[selectedCollection]?.color}
       {#each Object.entries(collections[selectedCollection].color) as [id, token]}
         <div class="token-container">
@@ -98,6 +129,12 @@
     {/if}
 
     <h3>Typography</h3>
+    <div class="list">
+      <div class="header"><small>Name</small></div>
+      <div class="header"><small>Description</small></div>
+      <div class="header"><small>Color</small></div>
+      <div class="header"><small>Options</small></div>
+    </div>
     {#if collections[selectedCollection]?.typography}
       {#each Object.entries(collections[selectedCollection].typography) as [id, token]}
         <div class="token-container">
@@ -112,6 +149,12 @@
     {/if}
 
     <h3>Spacing</h3>
+    <div class="list">
+      <div class="header"><small>Name</small></div>
+      <div class="header"><small>Description</small></div>
+      <div class="header"><small>Color</small></div>
+      <div class="header"><small>Options</small></div>
+    </div>
     {#if collections[selectedCollection]?.spacing}
       {#each Object.entries(collections[selectedCollection].spacing) as [id, token]}
         <div class="token-container">

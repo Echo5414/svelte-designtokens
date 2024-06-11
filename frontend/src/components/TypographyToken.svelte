@@ -14,11 +14,6 @@
   let displayName: string | null = null;
   let referencePath: string | null = null;
 
-  // Helper function to format the reference path
-  function formatReference(reference: string | undefined): string | undefined {
-    return reference?.replace(/\./g, '/');
-  }
-
   // Compute the display value, either the direct value or the reference value
   $: {
     if (token.$extensions && token.$extensions[EXTENSION_NAMESPACE]?.reference) {
@@ -105,42 +100,45 @@
   {#if editMode}
     <input type="text" bind:value={extensionName} placeholder="Name" class="cell" />
     <input type="text" bind:value={description} placeholder="Description" class="cell" />
-    <div>
+    <div class="cell">
       <label>
         <input type="radio" bind:group={isReference} value={false} /> Pick Values
       </label>
       <label>
         <input type="radio" bind:group={isReference} value={true} /> Reference Values
       </label>
+      {#if isReference}
+        <select bind:value={reference}>
+          <option value={''}>Select reference</option>
+          {#each Object.entries($tokensStore).flatMap(([collectionName, collectionTokens]) => 
+            Object.entries(collectionTokens.typography).map(([typographyId, typographyToken]) => ({
+              collectionName,
+              typographyId,
+              typographyToken
+            }))
+          ) as typography}
+            <option value={typography.typographyId}>{typography.typographyToken.$extensions?.[EXTENSION_NAMESPACE]?.name}</option>
+          {/each}
+        </select>
+      {:else}
+        <input type="text" bind:value={editedToken.$value['font-family']} placeholder="Font Family" class="cell" />
+        <input type="text" bind:value={editedToken.$value['font-size']} placeholder="Font Size" class="cell" />
+        <input type="number" bind:value={editedToken.$value['font-weight']} placeholder="Font Weight" class="cell" />
+        <input type="text" bind:value={editedToken.$value['line-height']} placeholder="Line Height" class="cell" />
+        <input type="text" bind:value={editedToken.$value['letter-spacing']} placeholder="Letter Spacing" class="cell" />
+      {/if}
     </div>
-    {#if isReference}
-      <select bind:value={reference}>
-        <option value={''}>Select reference</option>
-        {#each Object.entries($tokensStore).flatMap(([collectionName, collectionTokens]) => 
-          Object.entries(collectionTokens.typography).map(([typographyId, typographyToken]) => ({
-            collectionName,
-            typographyId,
-            typographyToken
-          }))
-        ) as typography}
-          <option value={typography.typographyId}>{typography.typographyToken.$extensions?.[EXTENSION_NAMESPACE]?.name}</option>
-        {/each}
-      </select>
-    {:else}
-      <input type="text" bind:value={editedToken.$value['font-family']} placeholder="Font Family" class="cell" />
-      <input type="text" bind:value={editedToken.$value['font-size']} placeholder="Font Size" class="cell" />
-      <input type="number" bind:value={editedToken.$value['font-weight']} placeholder="Font Weight" class="cell" />
-      <input type="text" bind:value={editedToken.$value['line-height']} placeholder="Line Height" class="cell" />
-      <input type="text" bind:value={editedToken.$value['letter-spacing']} placeholder="Letter Spacing" class="cell" />
-    {/if}
-    <button on:click={handleSave} class="cell">Save</button>
-    <button on:click={toggleEditMode} class="cell">Cancel</button>
+    <div class="button-container">
+      <button on:click={handleSave} class="cell">Save</button>
+      <button on:click={toggleEditMode} class="cell">Cancel</button>
+      <button on:click={handleDelete} class="cell">Delete</button>
+    </div>
   {:else}
     <div class="cell">{displayName}</div>
     <p class="cell">{token.$description}</p>
     <div class="values">
       {#if referenceTokenValue}
-        <p>{referencePath}</p>
+        <p class="ellipsis">{referencePath}</p>
         <p>{token.$value['font-family']}</p>
         <p>{token.$value['font-size']}</p>
         <p>{token.$value['font-weight']}</p>
@@ -154,7 +152,10 @@
         <p>{token.$value['letter-spacing']}</p>
       {/if}
     </div>
-    <button on:click={toggleEditMode} class="cell">Edit</button>
+    <div class="button-container">
+      <button on:click={toggleEditMode} class="cell">Edit</button>
+      <button on:click={handleDelete} class="cell">Delete</button>
+    </div>
   {/if}
-  <button on:click={handleDelete} class="cell">Delete</button>
 </div>
+

@@ -13,6 +13,7 @@
   let referenceTokenValue: string | null = null;
   let displayName: string | null = null;
   let referencePath: string | null = null;
+  let referenceName: string | null = null;
 
   // Helper function to format the reference path
   function formatReference(reference: string | undefined): string | undefined {
@@ -30,6 +31,7 @@
             if (tokens[referenceId]) {
               referenceTokenValue = tokens[referenceId].$value;
               referencePath = `${collectionName}/${type}/${tokens[referenceId].$extensions?.[EXTENSION_NAMESPACE]?.name}`;
+              referenceName = tokens[referenceId].$extensions?.[EXTENSION_NAMESPACE]?.name ?? null;
               displayName = token.$extensions[EXTENSION_NAMESPACE]?.name ?? null;
               break;
             }
@@ -39,6 +41,7 @@
     } else {
       referenceTokenValue = null;
       referencePath = null;
+      referenceName = null;
       displayName = token.$extensions?.[EXTENSION_NAMESPACE]?.name ?? null;
     }
   }
@@ -106,45 +109,55 @@
   {#if editMode}
     <input type="text" bind:value={extensionName} placeholder="Name" class="cell" />
     <input type="text" bind:value={description} placeholder="Description" class="cell" />
-    <div>
+    <div class="cell">
       <label>
         <input type="radio" bind:group={isReference} value={false} /> Pick Color
       </label>
       <label>
         <input type="radio" bind:group={isReference} value={true} /> Reference Color
       </label>
-    </div>
-    {#if isReference}
-      <select bind:value={reference}>
-        <option value={''}>Select reference</option>
-        {#each Object.entries($tokensStore).flatMap(([collectionName, collectionTokens]) => 
-          Object.entries(collectionTokens.color).map(([colorId, colorToken]) => ({
-            collectionName,
-            colorId,
-            colorToken
-          }))
-        ) as color}
-          <option value={color.colorId}>{color.colorToken.$extensions?.[EXTENSION_NAMESPACE]?.name}</option>
-        {/each}
-      </select>
-    {:else}
-      <input type="color" bind:value={editedToken.$value} class="cell" />
-    {/if}
-    <button on:click={handleSave} class="cell">Save</button>
-    <button on:click={toggleEditMode} class="cell">Cancel</button>
-  {:else}
-    <div class="cell">{displayName}</div>
-    <p class="cell">{token.$description}</p>
-    <div class="color">
-      {#if referenceTokenValue}
-        <span class="color-swatch" style="background-color: {token.$value};"></span>
-        <p>{referencePath}</p>
+      {#if isReference}
+        <select bind:value={reference}>
+          <option value={''}>Select reference</option>
+          {#each Object.entries($tokensStore).flatMap(([collectionName, collectionTokens]) => 
+            Object.entries(collectionTokens.color).map(([colorId, colorToken]) => ({
+              collectionName,
+              colorId,
+              colorToken
+            }))
+          ) as color}
+            <option value={color.colorId}>{color.colorToken.$extensions?.[EXTENSION_NAMESPACE]?.name}</option>
+          {/each}
+        </select>
       {:else}
-        <span class="color-swatch" style="background-color: {token.$value};"></span>
-        <p>{token.$value}</p>
+        <input type="color" bind:value={editedToken.$value} class="color-picker" />
       {/if}
     </div>
-    <button on:click={toggleEditMode} class="cell">Edit</button>
+    <div class="button-container">
+      <button on:click={handleSave} class="cell">Save</button>
+      <button on:click={toggleEditMode} class="cell">Cancel</button>
+      <button on:click={handleDelete} class="cell">Delete</button>
+    </div>
+  {:else}
+    <p class="cell">{displayName}</p>
+    <p class="cell">{token.$description}</p>
+    <div>
+      {#if referenceTokenValue}
+        <div class="color">
+          <span class="color-preview" style="background-color: {token.$value};"></span>
+          <!-- <p class="ellipsis">{referencePath}</p> -->
+          <p>{referenceName}</p>
+        </div>
+      {:else}
+      <div class="color">
+        <span class="color-preview" style="background-color: {token.$value};"></span>
+        <p>{token.$value}</p>
+      </div>
+      {/if}
+    </div>
+    <div class="button-container">
+      <button on:click={toggleEditMode} class="cell">Edit</button>
+      <button on:click={handleDelete} class="cell">Delete</button>
+    </div>
   {/if}
-  <button on:click={handleDelete} class="cell">Delete</button>
 </div>

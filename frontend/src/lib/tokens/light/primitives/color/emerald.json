@@ -1,0 +1,12 @@
+{
+  "EMERALD": {
+    "$type": "color",
+    "$description": "Primary Color of App",
+    "$value": "#55dd72",
+    "$extensions": {
+      "com.username.myapp": {
+        "id": "a3f4b23c-6fd1-4e29-8c29-3d8b4e3f4a9c"
+      }
+    }
+  }
+}
