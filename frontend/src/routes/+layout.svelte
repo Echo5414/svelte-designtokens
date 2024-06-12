@@ -169,6 +169,13 @@
   --app-text-small-fontSize: var(--app-typography-small-fontSize);
   --app-text-small-fontWeight: var(--app-typography-small-fontWeight);
 
+  // DropdownMenu Variant: default
+  --app-dropdown-backgroundColor: var(--app-color-neutral100);
+  --app-dropdown-textColor: var(--app-color-neutral900);
+  --app-dropdown-backgroundColor-hover: var(--app-color-primary500);
+  --app-dropdown-textColor-hover: var(--app-color-neutral100);
+  --app-dropdown-borderRadius: var(--app-dimension-borderRadius300);
+
 }
 
 :global(:root[data-theme="dark"]) {
@@ -217,7 +224,16 @@
   --app-text-small-fontSize: var(--app-typography-small-fontSize);
   --app-text-small-fontWeight: var(--app-typography-small-fontWeight);
 
+  // DropdownMenu Variant: default
+  --app-dropdown-backgroundColor: var(--app-color-neutral850);
+  --app-dropdown-textColor: var(--app-color-neutral400);
+  --app-dropdown-backgroundColor-hover: var(--app-color-primary500);
+  --app-dropdown-textColor-hover: var(--app-color-neutral100);
+  --app-dropdown-borderRadius: var(--app-dimension-borderRadius300);
+
 }
+
+
 
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
@@ -426,6 +442,68 @@
     background-color: #2b2b2b;
     color: white;
   }
+
+  :global(.collection-item) {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  :global(.collection-item input) {
+    width: 100%;
+  }
+
+  :global(.collection-item span) {
+    cursor: pointer;
+  }
+
+
+  :global(.error-message) {
+    color: red;
+    font-weight: bold;
+  }
+
+  // DropdownMenu.svelte
+
+  :global(.dropdown) {
+    position: relative;
+    display: inline-block;
+  }
+
+  :global(.dropdown-button) {
+    background-color: var(--app-dropdown-backgroundColor);
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+  }
+
+  :global(.dropdown-content) {
+    position: absolute;
+    background-color: var(--app-dropdown-backgroundColor);
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5);
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--app-dropdown-borderRadius);
+  }
+ 
+  :global(.dropdown-content button) {
+    background-color: var(--app-dropdown-backgroundColor);
+    color: var(--app-dropdown-textColor);
+    border: none;
+    padding: 12px 16px;
+    text-decoration: none;
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+  }
+
+  :global(.dropdown-content button:hover) {
+    background-color: var(--app-dropdown-backgroundColor-hover);
+    color: var(--app-dropdown-textColor-hover);
+  }
+
 
   // Muss von app generiert werden
   @media (--app-dimension-breakpoint300) {
