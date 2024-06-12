@@ -101,9 +101,9 @@
       <button on:click={() => selectedCollection && handleDeleteCollection(selectedCollection)}>Delete Current Collection</button>
     {/if}
   </div>
+  <TokenManager />
 
   {#if selectedCollection}
-    <TokenManager />
     <h2>Current Collection: {selectedCollection}</h2>
 
     <TokenForm on:add={(event) => handleAddToken(event.detail)} />

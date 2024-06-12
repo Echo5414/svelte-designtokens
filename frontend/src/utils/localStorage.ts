@@ -46,16 +46,26 @@ export interface Tokens {
   spacing: Record<string, SpacingToken>;
 }
 
-export function loadTokens(): { [key: string]: Tokens } | null {
+export interface TokenCollections {
+  [key: string]: Tokens;
+}
+
+interface SampleTokens {
+  [key: string]: Tokens;
+}
+
+export function loadTokens(): TokenCollections | null {
   if (typeof window !== 'undefined' && window.localStorage) {
     const data = localStorage.getItem(STORAGE_KEY);
+    console.log('Loaded tokens from localStorage:', data); // Debug log
     return data ? JSON.parse(data) : null;
   }
   return null;
 }
 
-export function saveTokens(tokens: { [key: string]: Tokens }): void {
+export function saveTokens(tokens: TokenCollections): void {
   if (typeof window !== 'undefined' && window.localStorage) {
+    console.log('Saving tokens to localStorage:', JSON.stringify(tokens, null, 2)); // Debug log
     localStorage.setItem(STORAGE_KEY, JSON.stringify(tokens));
   }
 }
@@ -63,8 +73,22 @@ export function saveTokens(tokens: { [key: string]: Tokens }): void {
 export function initializeLocalStorage(): void {
   if (typeof window !== 'undefined' && window.localStorage) {
     const existingTokens = loadTokens();
+    console.log('Existing tokens:', existingTokens); // Debug log
     if (!existingTokens || Object.keys(existingTokens).length === 0) {
-      saveTokens(sampleTokens as unknown as { [key: string]: Tokens });
+      const formattedTokens = formatSampleTokens(sampleTokens as SampleTokens);
+      console.log('No tokens found, loading sample tokens:', JSON.stringify(formattedTokens, null, 2)); // Debug log
+      saveTokens(formattedTokens);
     }
   }
+}
+
+function formatSampleTokens(rawTokens: SampleTokens): TokenCollections {
+  const formattedTokens: TokenCollections = {};
+
+  for (const key in rawTokens) {
+    formattedTokens[key] = rawTokens[key];
+  }
+
+  console.log('Formatted tokens:', JSON.stringify(formattedTokens, null, 2)); // Debug log
+  return formattedTokens;
 }

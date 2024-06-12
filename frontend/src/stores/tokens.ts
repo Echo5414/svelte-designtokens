@@ -1,12 +1,14 @@
 import { writable } from 'svelte/store';
-import type { Tokens, ColorToken, TypographyToken, SpacingToken } from '../utils/localStorage';
-import { loadTokens, saveTokens } from '../utils/localStorage';
+import type { Tokens, ColorToken, TypographyToken, SpacingToken, TokenCollections } from '../utils/localStorage';
+import { loadTokens, saveTokens, initializeLocalStorage } from '../utils/localStorage';
 
 const isBrowser = typeof window !== 'undefined';
 
-const initialData: { [key: string]: Tokens } = isBrowser ? (loadTokens() || {}) : {};
+initializeLocalStorage(); // Ensure localStorage is initialized
 
-export const tokensStore = writable<{ [key: string]: Tokens }>(initialData);
+const initialData: TokenCollections = isBrowser ? (loadTokens() || {}) : {};
+
+export const tokensStore = writable<TokenCollections>(initialData);
 
 if (isBrowser) {
   tokensStore.subscribe((value) => {
@@ -28,7 +30,12 @@ export function deleteCollection(name: string) {
   });
 }
 
-export function updateToken(collection: string, type: keyof Tokens, id: string, token: ColorToken | TypographyToken | SpacingToken) {
+export function updateToken(
+  collection: string,
+  type: keyof Tokens,
+  id: string,
+  token: ColorToken | TypographyToken | SpacingToken
+) {
   tokensStore.update((collections) => {
     collections[collection][type][id] = token;
 
@@ -46,7 +53,12 @@ export function updateToken(collection: string, type: keyof Tokens, id: string, 
   });
 }
 
-export function addToken(collection: string, type: keyof Tokens, id: string, token: ColorToken | TypographyToken | SpacingToken) {
+export function addToken(
+  collection: string,
+  type: keyof Tokens,
+  id: string,
+  token: ColorToken | TypographyToken | SpacingToken
+) {
   tokensStore.update((collections) => {
     collections[collection][type][id] = token;
     return collections;
