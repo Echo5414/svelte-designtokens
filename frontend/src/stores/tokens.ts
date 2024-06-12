@@ -16,6 +16,20 @@ if (isBrowser) {
   });
 }
 
+export function renameCollection(oldName: string, newName: string): boolean {
+  let success = false;
+  tokensStore.update((collections) => {
+    if (collections[oldName] && !collections[newName]) {
+      collections[newName] = collections[oldName];
+      delete collections[oldName];
+      success = true;
+    }
+    return collections;
+  });
+  return success;
+}
+
+
 export function addCollection(name: string) {
   tokensStore.update((collections) => {
     collections[name] = { color: {}, typography: {}, spacing: {} };

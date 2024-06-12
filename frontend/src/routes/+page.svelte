@@ -1,20 +1,21 @@
 <script lang="ts">
+  import DropdownMenu from '../components/DropdownMenu.svelte';
   import TokenManager from '../components/TokenManager.svelte';
-  import { tokensStore, addCollection, deleteCollection, updateToken, addToken, deleteToken } from '../stores/tokens';
+  import { tokensStore, addCollection, deleteCollection, renameCollection, updateToken, addToken, deleteToken } from '../stores/tokens';
   import ColorToken from '../components/ColorToken.svelte';
   import TypographyToken from '../components/TypographyToken.svelte';
   import SpacingToken from '../components/SpacingToken.svelte';
   import TokenForm from '../components/TokenForm.svelte';
   import { onMount } from 'svelte';
   import type { Tokens, ColorToken as ColorTokenType, TypographyToken as TypographyTokenType, SpacingToken as SpacingTokenType } from '../utils/localStorage';
+  import { get } from 'svelte/store';
 
   let collections: { [key: string]: Tokens } = {};
   let selectedCollection: string | null = null;
-  let newCollectionName = '';
   let theme = "dark";
+  let errorMessage = '';
 
   onMount(() => {
-    console.log('Current theme:', document.body.getAttribute('data-theme'));
     document.documentElement.setAttribute('data-theme', theme);
     const unsubscribe = tokensStore.subscribe((value) => {
       collections = value;
@@ -25,17 +26,54 @@
     return unsubscribe;
   });
 
-  function handleAddCollection() {
-    if (newCollectionName.trim()) {
-      addCollection(newCollectionName.trim());
-      newCollectionName = '';
+  function handleDropdownAction(event) {
+    const { action } = event.detail;
+    switch(action) {
+      case 'add':
+        handleAddCollection();
+        break;
+      case 'rename':
+        handleRenameCollection();
+        break;
+      case 'delete':
+        handleDeleteCollection();
+        break;
     }
   }
 
-  function handleDeleteCollection(name: string) {
-    deleteCollection(name);
-    if (selectedCollection === name) {
-      selectedCollection = Object.keys(collections)[0] || null;
+  function handleAddCollection() {
+    let newCollectionName = prompt("Enter new collection name:");
+    if (newCollectionName && newCollectionName.trim() && !collections[newCollectionName.trim()]) {
+      addCollection(newCollectionName.trim());
+      selectedCollection = newCollectionName.trim();
+      errorMessage = '';
+    } else {
+      errorMessage = 'Collection name already exists or is empty';
+      alert(errorMessage);
+    }
+  }
+
+  function handleRenameCollection() {
+    if (selectedCollection) {
+      let newName = prompt("Enter new name:", selectedCollection);
+      if (newName && newName.trim() && newName !== selectedCollection && !collections[newName.trim()]) {
+        renameCollection(selectedCollection, newName.trim());
+        selectedCollection = newName.trim();
+        errorMessage = '';
+      } else {
+        errorMessage = 'Collection name already exists or is empty';
+        alert(errorMessage);
+      }
+    }
+  }
+
+  function handleDeleteCollection() {
+    if (selectedCollection) {
+      if (confirm(`Are you sure you want to delete the collection "${selectedCollection}"?`)) {
+        deleteCollection(selectedCollection);
+        collections = get(tokensStore);
+        selectedCollection = Object.keys(collections)[0] || null;
+      }
     }
   }
 
@@ -81,16 +119,8 @@
     </div>
   </div>
 
-  <app-button variant="primary">
-
-  </app-button>
-
-  <!-- ENDE -->
   <div>
     <h2>Collections</h2>
-    <input type="text" bind:value={newCollectionName} placeholder="New Collection Name" />
-    <button variant="primary" on:click={handleAddCollection}>Add Collection</button>
-
     <select bind:value={selectedCollection}>
       {#each Object.keys(collections) as collection}
         <option value={collection}>{collection}</option>
@@ -98,14 +128,19 @@
     </select>
 
     {#if selectedCollection}
-      <button on:click={() => selectedCollection && handleDeleteCollection(selectedCollection)}>Delete Current Collection</button>
+      <DropdownMenu on:action={handleDropdownAction} />
+    {/if}
+
+    {#if errorMessage}
+      <p class="error-message">{errorMessage}</p>
     {/if}
   </div>
+
   <TokenManager />
+  
 
   {#if selectedCollection}
     <h2>Current Collection: {selectedCollection}</h2>
-
     <TokenForm on:add={(event) => handleAddToken(event.detail)} />
 
     <h3>Colors</h3>
@@ -115,6 +150,7 @@
       <div class="header"><small>Color</small></div>
       <div class="header"><small>Options</small></div>
     </div>
+
     {#if collections[selectedCollection]?.color}
       {#each Object.entries(collections[selectedCollection].color) as [id, token]}
         <div class="token-container">
@@ -132,9 +168,9 @@
     <div class="list">
       <div class="header"><small>Name</small></div>
       <div class="header"><small>Description</small></div>
-      <div class="header"><small>Color</small></div>
       <div class="header"><small>Options</small></div>
     </div>
+
     {#if collections[selectedCollection]?.typography}
       {#each Object.entries(collections[selectedCollection].typography) as [id, token]}
         <div class="token-container">
@@ -152,9 +188,9 @@
     <div class="list">
       <div class="header"><small>Name</small></div>
       <div class="header"><small>Description</small></div>
-      <div class="header"><small>Color</small></div>
       <div class="header"><small>Options</small></div>
     </div>
+
     {#if collections[selectedCollection]?.spacing}
       {#each Object.entries(collections[selectedCollection].spacing) as [id, token]}
         <div class="token-container">
