@@ -38,4 +38,4 @@
       <button on:click={() => handleAction('delete')}>Delete Collection</button>
     </div>
   {/if}
-</div>
+</div> 
